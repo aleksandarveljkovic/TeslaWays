@@ -15,6 +15,7 @@ export class HomePage {
   map : any; ///Imamo pozamasnu gresku u lokaciji ///I na telefonu ne radi zoom automatski
   nativeLocator : NativeLocator;
   location : any;
+  
   //44.8064000 20.48291
   geoLocations = 
     [{lat: 44.8064000, long:20.48291}, 
@@ -37,8 +38,8 @@ export class HomePage {
       this.map = leaflet.map('map');
 
       leaflet.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(this.map);
+      attribution: '&copy; www.teslaways.com'
+      }).addTo(this.map);
 
   leaflet.Routing.control({
       waypoints: [
@@ -51,10 +52,12 @@ export class HomePage {
 
       setView : true, 
       maxZoom: 50,
+      
+      
       //watch : true
       
     }).on('locationfound', (e) => {
-
+      console.log('Locirao sam te!!!!');
       //console.log("Your location has been found");
       console.log(e.latitude + "  " +  e.longitude);
       let markerGroup = leaflet.featureGroup();
@@ -69,7 +72,7 @@ export class HomePage {
       for(let i=0;i<this.geoLocations.length;i++) {
 
           //let tmpMarker : any = leaflet.marker([this.geoLocations[i].lat, this.geoLocations[i].long]);
-          //console.log(this.geoLocations[i].lat + "  " + this.geoLocations[i].long);
+          console.log(this.geoLocations[i].lat + "  " + this.geoLocations[i].long);
           leaflet.marker([this.geoLocations[i].lat, this.geoLocations[i].long], 
                         {icon: myIcon}).addTo(this.map);
           //markerGroup.addLayer(tmpMarker);
@@ -95,11 +98,6 @@ export class HomePage {
     this.loadmap();
     //document.addEventListener("deviceready", this.loadmap, false);
     // this.onDeviceReady();
-  }
-
-
-  
-
-  
+  } 
 
 }
