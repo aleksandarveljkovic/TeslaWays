@@ -1,9 +1,10 @@
 import { Geolocation } from '@ionic-native/geolocation';
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
 import leaflet from 'leaflet';
 import { NativeLocator } from "../../nativeLocator/nativeLocator";
 import 'leaflet-routing-machine';
+
 
 
 @Component({
@@ -23,8 +24,24 @@ export class HomePage {
       {lat: 44.8014000, long:20.48291}];
 
   @ViewChild('map') mapContainer : ElementRef;
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, public platform: Platform, private geolocation: Geolocation) {
+    platform.ready().then(() => {
+      this.initLocation();
+    });
+  }
 
+  initLocation() {
+    this.geolocation.getCurrentPosition({
+      maximumAge: 3000,
+      timeout: 5000, 
+      enableHighAccuracy: true
+    })
+      .then((resp) => {
+        console.log(resp.coords.latitude + " " + resp.coords.longitude);
+        
+      }).catch((e) => {
+        console.log('pucam u lokaciji...' + e.message);        
+      });
   }
 
   loadmap() {

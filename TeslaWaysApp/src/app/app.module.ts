@@ -10,13 +10,16 @@ import { HomePage } from '../pages/home/home';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { NewsProvider } from '../providers/news/news';
+import { Geolocation } from '@ionic-native/geolocation';
+import { CustomCardComponent } from '../components/custom-card/custom-card';
 //  import { NativeLocator} from '../nativeLocator/nativeLocator';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    NewsPage
+    NewsPage,
+    CustomCardComponent
   ],
   imports: [
     BrowserModule,
@@ -27,13 +30,15 @@ import { NewsProvider } from '../providers/news/news';
   entryComponents: [
     MyApp,
     HomePage,
-    NewsPage
+    NewsPage,
+    CustomCardComponent
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    NewsProvider
+    NewsProvider,
+    Geolocation
   ]
 })
 export class AppModule {}
