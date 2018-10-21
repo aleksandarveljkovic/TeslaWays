@@ -3,6 +3,8 @@ import { NewsPage } from './../pages/news/news';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicImageLoader } from 'ionic-image-loader';
+
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -12,6 +14,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { NewsProvider } from '../providers/news/news';
 import { Geolocation } from '@ionic-native/geolocation';
 import { CustomCardComponent } from '../components/custom-card/custom-card';
+import { ProbaPage } from '../pages/proba/proba';
+;
 //  import { NativeLocator} from '../nativeLocator/nativeLocator';
 
 @NgModule({
@@ -19,18 +23,22 @@ import { CustomCardComponent } from '../components/custom-card/custom-card';
     MyApp,
     HomePage,
     NewsPage,
+    ProbaPage,
     CustomCardComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
     IonicModule.forRoot(MyApp),
+    HttpClientModule,
+    IonicImageLoader.forRoot()
+
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     HomePage,
     NewsPage,
+    ProbaPage,
     CustomCardComponent
   ],
   providers: [

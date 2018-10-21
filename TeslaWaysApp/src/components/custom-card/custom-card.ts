@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Article } from '../../article/article';
+import { ImageLoader } from 'ionic-image-loader';
 
 /**
  * Generated class for the CustomCardComponent component.
@@ -15,7 +16,7 @@ export class CustomCardComponent {
 
   @Input() article: Article;
 
-  constructor() {
+  constructor(private imageLoader: ImageLoader) {
     // console.log(this.article.title + " " + this.article.text);
     
   }

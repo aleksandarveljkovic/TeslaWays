@@ -2,6 +2,9 @@ import { Article } from './../../article/article';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NewsProvider } from '../../providers/news/news';
+import { HttpClient } from '@angular/common/http';
+import { ImageLoader } from 'ionic-image-loader';
+
 /**
  * Generated class for the NewsPage page.
  *
@@ -22,7 +25,9 @@ export class NewsPage implements OnInit {
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              private newsService: NewsProvider) {
+              private newsService: NewsProvider,
+              private imageLoader: ImageLoader,
+              private httpClient: HttpClient) {
   } 
 
   ionViewDidLoad() {
