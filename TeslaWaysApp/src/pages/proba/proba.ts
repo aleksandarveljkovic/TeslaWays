@@ -2,7 +2,7 @@ import { NewsProvider } from './../../providers/news/news';
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { ImageLoader } from 'ionic-image-loader';
+//import { ImageLoader } from 'ionic-image-loader';
  
 @Component({
   selector: 'page-proba',
@@ -13,7 +13,8 @@ export class ProbaPage {
   jsonData = null;
   data: any = [];
  
-  constructor(public navCtrl: NavController, private htppClient: HttpClient, private imageLoader: ImageLoader, private newsService: NewsProvider) { }
+  constructor(public navCtrl: NavController, private htppClient: HttpClient,
+     private newsService: NewsProvider) { } // private imageLoader: ImageLoader,
  
   loadData() {
     if (!this.jsonData) {
@@ -32,7 +33,7 @@ export class ProbaPage {
   }
  
   clearCache(refresher) {
-    this.imageLoader.clearCache();
+   // this.imageLoader.clearCache();
     refresher.complete();
   }
  

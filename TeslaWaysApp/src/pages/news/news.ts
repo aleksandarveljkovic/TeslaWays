@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NewsProvider } from '../../providers/news/news';
 import { HttpClient } from '@angular/common/http';
-import { ImageLoader } from 'ionic-image-loader';
+import { DisplayNewsPage} from '../display-news/display-news';
+
+// import { ImageLoader } from 'ionic-image-loader';
 
 /**
  * Generated class for the NewsPage page.
@@ -26,7 +28,6 @@ export class NewsPage implements OnInit {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private newsService: NewsProvider,
-              private imageLoader: ImageLoader,
               private httpClient: HttpClient) {
   } 
 
@@ -50,5 +51,9 @@ export class NewsPage implements OnInit {
     for (let article of this.data.articles) {
       this.images.push(article.urlToImg);
     }
+  }
+
+  displayNew(description : string) {
+    this.navCtrl.push(DisplayNewsPage, {description : description})
   }
 }

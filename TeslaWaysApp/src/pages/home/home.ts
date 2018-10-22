@@ -1,3 +1,4 @@
+import { GoogleMaps, GoogleMap, Environment } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
@@ -13,108 +14,37 @@ import 'leaflet-routing-machine';
 })
 export class HomePage {
 
-  map : any; ///Imamo pozamasnu gresku u lokaciji ///I na telefonu ne radi zoom automatski
-  nativeLocator : NativeLocator;
-  location : any;
+  map : GoogleMap;
   
   //44.8064000 20.48291
-  geoLocations = 
-    [{lat: 44.8064000, long:20.48291}, 
-      {lat: 44.8074000, long:20.48291}, 
-      {lat: 44.8014000, long:20.48291}];
+  // geoLocations = 
+  //   [{lat: 44.8064000, long:20.48291}, 
+  //     {lat: 44.8074000, long:20.48291}, 
+  //     {lat: 44.8014000, long:20.48291}];
 
-  @ViewChild('map') mapContainer : ElementRef;
-  constructor(public navCtrl: NavController, public platform: Platform, private geolocation: Geolocation) {
-    platform.ready().then(() => {
-      this.initLocation();
-    });
+  constructor(public navCtrl: NavController) {
+
   }
 
-  initLocation() {
-    this.geolocation.getCurrentPosition({
-      maximumAge: 3000,
-      timeout: 5000, 
-      enableHighAccuracy: true
-    })
-      .then((resp) => {
-        console.log(resp.coords.latitude + " " + resp.coords.longitude);
-        
-      }).catch((e) => {
-        console.log('pucam u lokaciji...' + e.message);        
-      });
-  }
-
-  loadmap() {
-
-    // this.map = leaflet.map('map').fitWorld();
-    // leaflet.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //   attributions: 'http://www.teslaways.rs/',
-    //   maxZoom: 18
-    // }).addTo(this.map);
-
-      this.map = leaflet.map('map');
-
-      leaflet.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; www.teslaways.com'
-      }).addTo(this.map);
-
-  leaflet.Routing.control({
-      waypoints: [
-        leaflet.latLng(this.geoLocations[0].lat, this.geoLocations[0].long),
-        leaflet.latLng(this.geoLocations[1].lat, this.geoLocations[1].long)
-      ]
-  }).addTo(this.map);
-
-    this.map.locate({
-
-      setView : true, 
-      maxZoom: 50,
-      
-      
-      //watch : true
-      
-    }).on('locationfound', (e) => {
-      console.log('Locirao sam te!!!!');
-      //console.log("Your location has been found");
-      console.log(e.latitude + "  " +  e.longitude);
-      let markerGroup = leaflet.featureGroup();
-      let marker : any = leaflet.marker([e.latitude, e.longitude]);
-
-      let myIcon = leaflet.icon({
-
-          iconUrl : '../../assets/cropMuzej.png',
-          iconSize : [30, 30]
-      });
-
-      for(let i=0;i<this.geoLocations.length;i++) {
-
-          //let tmpMarker : any = leaflet.marker([this.geoLocations[i].lat, this.geoLocations[i].long]);
-          console.log(this.geoLocations[i].lat + "  " + this.geoLocations[i].long);
-          leaflet.marker([this.geoLocations[i].lat, this.geoLocations[i].long], 
-                        {icon: myIcon}).addTo(this.map);
-          //markerGroup.addLayer(tmpMarker);
-      }
-
-      markerGroup.addLayer(marker);
-      this.map.addLayer(markerGroup);
-      //setLatLng(<LatLng> latlng)
-      
-    });
-  }
-//--------------------------------------------------------------
-  onDeviceReady() {
-    //this.nativeLocate();
-    this.nativeLocator = new NativeLocator();
-    this.location = this.nativeLocator.locate();
-    console.log(location[1] + " " + location[2]);
-  }
-//-------------------------------------------------------------
-  ionViewDidEnter(){
+  ionViewDidLoad(){
     
-    // na androidu mora sa eventListenerom ali i dalje nista ne raid
-    this.loadmap();
-    //document.addEventListener("deviceready", this.loadmap, false);
-    // this.onDeviceReady();
-  } 
+    this.loadMap();
+  }
+
+  loadMap() {
+
+    //---------------------------------------
+    ///za testiranje na browseru radimo ovaj kod
+    // Environment.setEnv({
+    //   'API_KEY_FOR_BROWSER_DEBUG': '',
+    //   'API_KEY_FOR_BROWSER_RELEASE':''
+    // });
+    // ------------------------------
+
+    this.map = GoogleMaps.create('map_canvas');
+
+
+
+  }
 
 }

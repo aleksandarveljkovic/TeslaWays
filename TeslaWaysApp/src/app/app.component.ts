@@ -7,7 +7,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
 import { NewsPage } from '../pages/news/news';
 
-import { ImageLoaderConfig } from 'ionic-image-loader';
+//import { ImageLoaderConfig } from 'ionic-image-loader';
 
 
 
@@ -17,18 +17,18 @@ import { ImageLoaderConfig } from 'ionic-image-loader';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage: any;
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private imageLoaderConfig: ImageLoaderConfig) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
     this.initializeApp();
     platform.ready().then(() => {
-      this.imageLoaderConfig.enableDebugMode();
+     // this.imageLoaderConfig.enableDebugMode();
       // this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
       // this.imageLoaderConfig.setFallbackUrl('assets/imgs/logo.png');
-      this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
-
+      //this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
+      
       // ovo je bilo van
       this.pages = [
         ///DODATI SVE STRANICE KOJE PRAVIMO
@@ -55,6 +55,7 @@ export class MyApp {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      this.rootPage = HomePage;
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
