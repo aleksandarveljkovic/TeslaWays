@@ -52,6 +52,7 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     NewsProvider,
     GoogleMaps,
+    // LocationService,
     Geolocation
   ]
 })
