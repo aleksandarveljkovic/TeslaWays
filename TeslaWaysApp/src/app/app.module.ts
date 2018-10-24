@@ -14,7 +14,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { NewsProvider } from '../providers/news/news';
 import { Geolocation } from '@ionic-native/geolocation';
-import { CustomCardComponent } from '../components/custom-card/custom-card';
+// import { CustomCardComponent } from '../components/custom-card/custom-card';
 import { ProbaPage } from '../pages/proba/proba';
 
 import {GoogleMaps} from "@ionic-native/google-maps";
@@ -28,7 +28,7 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     NewsPage,
     ProbaPage,
     DisplayNewsPage, 
-    CustomCardComponent
+    // CustomCardComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +44,7 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     NewsPage,
     ProbaPage,
     DisplayNewsPage,
-    CustomCardComponent
+    // CustomCardComponent
   ],
   providers: [
     StatusBar,
