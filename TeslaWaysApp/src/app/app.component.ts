@@ -1,15 +1,10 @@
+import { NewsPage } from './../pages/news/news';
 import { HomePage } from './../pages/home/home';
 import { ProbaPage } from './../pages/proba/proba';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
-import { NewsPage } from '../pages/news/news';
-
-//import { ImageLoaderConfig } from 'ionic-image-loader';
-
-
 
 @Component({
   templateUrl: 'app.html'
@@ -24,6 +19,7 @@ export class MyApp {
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
     this.initializeApp();
     platform.ready().then(() => {
+      // newsPage.hello();
      // this.imageLoaderConfig.enableDebugMode();
       // this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
       // this.imageLoaderConfig.setFallbackUrl('assets/imgs/logo.png');
@@ -34,7 +30,8 @@ export class MyApp {
         ///DODATI SVE STRANICE KOJE PRAVIMO
         { title: 'Home', component: HomePage },
         { title: 'News', component: NewsPage},
-        { title: 'Proba', component: ProbaPage}
+        { title: 'Proba', component: ProbaPage},
+        
       ];
 
       statusBar.styleDefault();
@@ -56,6 +53,7 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       // this.rootPage = HomePage;
+      // this.newsPage.hello();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });

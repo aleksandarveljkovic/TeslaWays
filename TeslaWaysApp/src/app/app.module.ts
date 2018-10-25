@@ -1,3 +1,4 @@
+import { GamePage } from './../pages/game/game';
 import { DisplayNewsPage } from './../pages/display-news/display-news';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NewsPage } from './../pages/news/news';
@@ -18,6 +19,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { ProbaPage } from '../pages/proba/proba';
 
 import {GoogleMaps} from "@ionic-native/google-maps";
+import {Geofence} from "@ionic-native/geofence"
 
 //  import { NativeLocator} from '../nativeLocator/nativeLocator';
 
@@ -28,6 +30,7 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     NewsPage,
     ProbaPage,
     DisplayNewsPage, 
+    GamePage
     // CustomCardComponent
   ],
   imports: [
@@ -44,6 +47,7 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     NewsPage,
     ProbaPage,
     DisplayNewsPage,
+    GamePage
     // CustomCardComponent
   ],
   providers: [
@@ -53,7 +57,8 @@ import {GoogleMaps} from "@ionic-native/google-maps";
     NewsProvider,
     GoogleMaps,
     // LocationService,
-    Geolocation
+    Geolocation, 
+    Geofence
   ]
 })
 export class AppModule {}

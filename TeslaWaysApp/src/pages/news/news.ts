@@ -35,6 +35,10 @@ export class NewsPage implements OnInit {
     console.log('ionViewDidLoad NewsPage');
   }
 
+  hello() {
+    alert("Hello news from app module");
+  }
+
   ngOnInit() {
     this.newsService
       .getData('top-headlines?country=us&category=business')
