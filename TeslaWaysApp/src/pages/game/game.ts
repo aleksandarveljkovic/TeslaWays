@@ -13,6 +13,7 @@ import {
   GoogleMapsEvent
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
+import { Tour } from '../../objekat/tura';
 
 
 /**
@@ -47,10 +48,15 @@ export class GamePage {
     [{lat: 44.818137, lng: 20.456649}, 
       {lat: 44.816496, lng: 20.456625}, 
       {lat: 44.820114, lng: 20.459243}];
+  
+  tours: Tour[];
 
-  constructor(public navCtrl: NavController,public platform: Platform, public geolocation: Geolocation, private geofence : Geofence) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public platform: Platform, public geolocation: Geolocation, private geofence : Geofence) {
     geofence.initialize().then(() => {
       alert('geofence ready');
+      this.tours = this.navParams.get('tours');
+
+      alert(this.tours[0].locations[0].questions[0].answers);
     });
   }
 
@@ -198,7 +204,7 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      () => alert("Dodao sam geofence");      
+      alert("Dodao sam geofence");      
     }).catch((err) => {
       alert(err.message);
     });

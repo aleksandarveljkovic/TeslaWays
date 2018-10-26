@@ -1,3 +1,6 @@
+import { SightsPage } from './../pages/sights/sights';
+import { TermsOfUsePage } from './../pages/terms-of-use/terms-of-use';
+import { AboutProjectPage } from './../pages/about-project/about-project';
 import { GamePage } from './../pages/game/game';
 import { DisplayNewsPage } from './../pages/display-news/display-news';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -20,6 +23,7 @@ import { ProbaPage } from '../pages/proba/proba';
 
 import {GoogleMaps} from "@ionic-native/google-maps";
 import {Geofence} from "@ionic-native/geofence"
+import { ObjectProvider } from '../providers/object/object';
 
 //  import { NativeLocator} from '../nativeLocator/nativeLocator';
 
@@ -30,7 +34,10 @@ import {Geofence} from "@ionic-native/geofence"
     NewsPage,
     ProbaPage,
     DisplayNewsPage, 
-    GamePage
+    GamePage,
+    AboutProjectPage,
+    TermsOfUsePage,
+    SightsPage
     // CustomCardComponent
   ],
   imports: [
@@ -47,7 +54,10 @@ import {Geofence} from "@ionic-native/geofence"
     NewsPage,
     ProbaPage,
     DisplayNewsPage,
-    GamePage
+    GamePage,
+    AboutProjectPage,
+    TermsOfUsePage,
+    SightsPage
     // CustomCardComponent
   ],
   providers: [
@@ -56,9 +66,11 @@ import {Geofence} from "@ionic-native/geofence"
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     NewsProvider,
     GoogleMaps,
+    ObjectProvider,
     // LocationService,
     Geolocation, 
-    Geofence
+    Geofence,
+    ObjectProvider
   ]
 })
 export class AppModule {}

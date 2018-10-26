@@ -1,3 +1,6 @@
+import { TermsOfUsePage } from './../pages/terms-of-use/terms-of-use';
+import { AboutProjectPage } from './../pages/about-project/about-project';
+import { SightsPage } from './../pages/sights/sights';
 import { NewsPage } from './../pages/news/news';
 import { HomePage } from './../pages/home/home';
 import { ProbaPage } from './../pages/proba/proba';
@@ -28,9 +31,12 @@ export class MyApp {
       // ovo je bilo van
       this.pages = [
         ///DODATI SVE STRANICE KOJE PRAVIMO
-        { title: 'Home', component: HomePage },
-        { title: 'News', component: NewsPage},
+        { title: 'Naslovna', component: HomePage },
+        { title: 'Novosti', component: NewsPage},
         { title: 'Proba', component: ProbaPage},
+        { title: 'Znamenitosti', component: SightsPage},
+        { title: 'O projektu', component: AboutProjectPage},
+        { title: 'Uslovi koriscenja', component: TermsOfUsePage},
         
       ];
 
