@@ -19,7 +19,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { NewsProvider } from '../providers/news/news';
 import { Geolocation } from '@ionic-native/geolocation';
 // import { CustomCardComponent } from '../components/custom-card/custom-card';
-import { ProbaPage } from '../pages/proba/proba';
+// import { ProbaPage } from '../pages/proba/proba';
 
 import {GoogleMaps} from "@ionic-native/google-maps";
 import {Geofence} from "@ionic-native/geofence"
@@ -32,7 +32,7 @@ import { ObjectProvider } from '../providers/object/object';
     MyApp,
     HomePage,
     NewsPage,
-    ProbaPage,
+    // ProbaPage,
     DisplayNewsPage, 
     GamePage,
     AboutProjectPage,
@@ -52,7 +52,7 @@ import { ObjectProvider } from '../providers/object/object';
     MyApp,
     HomePage,
     NewsPage,
-    ProbaPage,
+    // ProbaPage,
     DisplayNewsPage,
     GamePage,
     AboutProjectPage,
@@ -64,13 +64,12 @@ import { ObjectProvider } from '../providers/object/object';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    NewsProvider,
     GoogleMaps,
     ObjectProvider,
+    NewsProvider,
     // LocationService,
     Geolocation, 
-    Geofence,
-    ObjectProvider
+    Geofence
   ]
 })
 export class AppModule {}

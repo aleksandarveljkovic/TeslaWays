@@ -1,3 +1,4 @@
+import { ObjectProvider } from './../../providers/object/object';
 import { Article } from './../../article/article';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -19,36 +20,32 @@ import { DisplayNewsPage} from '../display-news/display-news';
   selector: 'page-news',
   templateUrl: 'news.html',
 })
-export class NewsPage implements OnInit {
+export class NewsPage {
 
-  data: any = [];
+  data: any;
   images: any = [];
   object: any = {text: 'eeeeee'};
   
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              private newsService: NewsProvider,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              public newsProvider: NewsProvider) {
+    
   } 
 
+  // TODO nemoj dva puta da ucitavas!!!!
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NewsPage');
-  }
-
-  hello() {
-    alert("Hello news from app module");
-  }
-
-  ngOnInit() {
-    this.newsService
-      .getData('top-headlines?country=us&category=business')
+    if (this.navParams.get("news")) {
+      this.data = this.navParams.get("news");
+      alert(this.data);
+    } 
+    else {
+      this.newsProvider
+      .getData()
       .subscribe((data) => {
-        console.log(data);
         this.data = data;
-        // this.initImages();
-        // console.log(this.data.articles.author);
-
-    });
+      });
+    }  
   }
 
   initImages() {

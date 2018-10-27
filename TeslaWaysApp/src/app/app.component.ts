@@ -1,13 +1,15 @@
+import { NewsProvider } from './../providers/news/news';
 import { TermsOfUsePage } from './../pages/terms-of-use/terms-of-use';
 import { AboutProjectPage } from './../pages/about-project/about-project';
 import { SightsPage } from './../pages/sights/sights';
 import { NewsPage } from './../pages/news/news';
 import { HomePage } from './../pages/home/home';
-import { ProbaPage } from './../pages/proba/proba';
+// import { ProbaPage } from './../pages/proba/proba';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
 
 @Component({
   templateUrl: 'app.html'
@@ -19,7 +21,9 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform, 
+              public statusBar: StatusBar, 
+              public splashScreen: SplashScreen) {
     this.initializeApp();
     platform.ready().then(() => {
       // newsPage.hello();
@@ -33,7 +37,6 @@ export class MyApp {
         ///DODATI SVE STRANICE KOJE PRAVIMO
         { title: 'Naslovna', component: HomePage },
         { title: 'Novosti', component: NewsPage},
-        { title: 'Proba', component: ProbaPage},
         { title: 'Znamenitosti', component: SightsPage},
         { title: 'O projektu', component: AboutProjectPage},
         { title: 'Uslovi koriscenja', component: TermsOfUsePage},

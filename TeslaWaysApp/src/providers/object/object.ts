@@ -53,12 +53,11 @@ export class ObjectProvider {
   ];
   
   tours : Tour[] = [
-    {tourTitle: "Beograd", locations: this.locations}
+    {tourTitle: "Teslin put kroz Beograd", locations: this.locations}
   ];
 
-  getData(url) : Tour[] {
-    // return this.http.get(""); ovde url kad dignem na localhost
+  getData(url): Tour[] {
+    // return this.http.get("/dajObjekat"); //ovde url kad dignem na localhost
     return this.tours;
   }
-
 }

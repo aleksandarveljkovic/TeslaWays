@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
 
 /*
   Generated class for the NewsProvider provider.
@@ -15,14 +16,25 @@ const API_KEY = environment.apiKey;
 
 @Injectable()
 export class NewsProvider {
-
-  // constructor(public http: HttpClient) {
-    constructor(public http: HttpClient) {
-    console.log('Hello NewsProvider Provider');
+  news : any;
+  proba : Object = {tekst: "NEsto"};
+  loaded: boolean = false;
+  arr: any;
+  
+  constructor(public http: HttpClient) { 
+    this.http
+        .get(`${API_URL}/top-headlines?country=us&category=business&apiKey=${API_KEY}`)
+        .subscribe((data) => {
+          this.news = data;
+          this.loaded = true;
+          // alert("[provider] " + this.news.articles);
+        });
+    this.arr = [1, 2, 3];
   }
 
-  getData(url) {
-    return this.http.get(`${API_URL}/${url}&apiKey=${API_KEY}`);
+  getData(): Observable<any> {
+    // alert("[get data] " + this.news);
+    return this.http.get(`${API_URL}/top-headlines?country=us&category=business&apiKey=${API_KEY}`);
+    // return this.proba;
   }
-
 }

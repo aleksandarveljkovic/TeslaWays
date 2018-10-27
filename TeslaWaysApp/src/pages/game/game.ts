@@ -54,10 +54,11 @@ export class GamePage {
   constructor(public navCtrl: NavController, public navParams: NavParams,public platform: Platform, public geolocation: Geolocation, private geofence : Geofence) {
     geofence.initialize().then(() => {
       alert('geofence ready');
-      this.tours = this.navParams.get('tours');
-
-      alert(this.tours[0].locations[0].questions[0].answers);
+      
     });
+
+    this.tours = this.navParams.get('tours');
+    alert(this.tours[0].locations[0].questions[0].answers);
   }
 
   ionViewWillEnter() {
