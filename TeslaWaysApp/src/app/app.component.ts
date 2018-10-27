@@ -17,13 +17,16 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage: any;
+  news: any;
+  rootPageParams: any;
 
   pages: Array<{title: string, component: any}>;
 
   constructor(public platform: Platform, 
               public statusBar: StatusBar, 
-              public splashScreen: SplashScreen) {
+              public splashScreen: SplashScreen,
+              public newsProvider: NewsProvider) {
     this.initializeApp();
     platform.ready().then(() => {
       // newsPage.hello();
@@ -32,6 +35,18 @@ export class MyApp {
       // this.imageLoaderConfig.setFallbackUrl('assets/imgs/logo.png');
       //this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
       
+      
+
+      this.newsProvider
+        .getData()
+        .subscribe((data) => {
+          this.news = data;
+          this.newsProvider.news = data;
+          // this.rootPageParams = this.news;
+          alert("[app component] loaded news! " + this.news);
+          this.rootPage = HomePage;               
+        });
+
       // ovo je bilo van
       this.pages = [
         ///DODATI SVE STRANICE KOJE PRAVIMO
@@ -40,8 +55,9 @@ export class MyApp {
         { title: 'Znamenitosti', component: SightsPage},
         { title: 'O projektu', component: AboutProjectPage},
         { title: 'Uslovi koriscenja', component: TermsOfUsePage},
-        
       ];
+
+      
 
       statusBar.styleDefault();
       splashScreen.hide();
@@ -63,6 +79,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       // this.rootPage = HomePage;
       // this.newsPage.hello();
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
@@ -71,6 +88,11 @@ export class MyApp {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    this.nav.push(page.component);
+    if (page.component == NewsPage) {
+      this.nav.push(page.component, {news: this.news});
+    }
+    else {
+      this.nav.push(page.component);
+    }
   }
 }

@@ -15,15 +15,15 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class DisplayNewsPage {
 
-  description : any;
+  article: string;
   
   constructor(public navCtrl: NavController, public navParams: NavParams) {
 
   }
 
   ionViewDidLoad() {
-    this.description = this.navParams.get('description');
-    console.log(this.description);
+    this.article = this.navParams.get("article");
+    alert("[display] " + this.article);
   }
 
 }

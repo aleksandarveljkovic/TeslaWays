@@ -39,13 +39,13 @@ export class NewsPage {
       this.data = this.navParams.get("news");
       alert(this.data);
     } 
-    else {
-      this.newsProvider
-      .getData()
-      .subscribe((data) => {
-        this.data = data;
-      });
-    }  
+    // else {
+    //   this.newsProvider
+    //   .getData()
+    //   .subscribe((data) => {
+    //     this.data = data;
+    //   });
+    // }  
   }
 
   initImages() {
@@ -54,7 +54,7 @@ export class NewsPage {
     }
   }
 
-  displayNew(description : string) {
-    this.navCtrl.push(DisplayNewsPage, {description : description})
+  displayArticle(article: string) {
+    this.navCtrl.push(DisplayNewsPage, {article: article});
   }
 }

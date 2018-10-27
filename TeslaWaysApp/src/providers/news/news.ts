@@ -22,14 +22,7 @@ export class NewsProvider {
   arr: any;
   
   constructor(public http: HttpClient) { 
-    this.http
-        .get(`${API_URL}/top-headlines?country=us&category=business&apiKey=${API_KEY}`)
-        .subscribe((data) => {
-          this.news = data;
-          this.loaded = true;
-          // alert("[provider] " + this.news.articles);
-        });
-    this.arr = [1, 2, 3];
+  
   }
 
   getData(): Observable<any> {

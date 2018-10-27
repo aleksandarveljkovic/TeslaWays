@@ -51,7 +51,11 @@ export class GamePage {
   
   tours: Tour[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public platform: Platform, public geolocation: Geolocation, private geofence : Geofence) {
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams,
+              public platform: Platform, 
+              public geolocation: Geolocation, 
+              private geofence : Geofence) {
     geofence.initialize().then(() => {
       alert('geofence ready');
       
