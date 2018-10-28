@@ -48,6 +48,19 @@ export class ObjectProvider {
       questions: this.questions,
       status: "discovered", // locked, undiscovered, answered
       answered: false
+    },
+    {
+      id: "Lokacija Bezanijska kosa geofence test",
+      index: 2,
+      adress: "adresaasdasd",
+      lat: 44.809517,
+      lng: 20.366628,
+      title : "Lokacija 2", // naziv lokacije
+      content : "DSA",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
     }
     
   ];

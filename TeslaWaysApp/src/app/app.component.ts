@@ -6,9 +6,11 @@ import { NewsPage } from './../pages/news/news';
 import { HomePage } from './../pages/home/home';
 // import { ProbaPage } from './../pages/proba/proba';
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Network } from '@ionic-native/network';
+import { NetworkProvider } from '../providers/network/network';
 
 
 @Component({
@@ -26,9 +28,12 @@ export class MyApp {
   constructor(public platform: Platform, 
               public statusBar: StatusBar, 
               public splashScreen: SplashScreen,
-              public newsProvider: NewsProvider) {
+              public newsProvider: NewsProvider,
+              public events: Events,
+              public network: Network,
+              public networkProvider: NetworkProvider) {
     this.initializeApp();
-    platform.ready().then(() => {
+    // platform.ready().then(() => {
       // newsPage.hello();
      // this.imageLoaderConfig.enableDebugMode();
       // this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
@@ -37,15 +42,7 @@ export class MyApp {
       
       
 
-      this.newsProvider
-        .getData()
-        .subscribe((data) => {
-          this.news = data;
-          this.newsProvider.news = data;
-          // this.rootPageParams = this.news;
-          alert("[app component] loaded news! " + this.news);
-          this.rootPage = HomePage;               
-        });
+      
 
       // ovo je bilo van
       this.pages = [
@@ -61,24 +58,36 @@ export class MyApp {
 
       statusBar.styleDefault();
       splashScreen.hide();
-    });
+    // });
     
 
     // this.imageLoaderConfig.enableDebugMode();
     // this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
-
-
-    // used for an example of ngFor and navigation
-    
-
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      // this.rootPage = HomePage;
-      // this.newsPage.hello();
+      this.newsProvider
+        .getData()
+        .subscribe((data) => {
+          this.news = data;
+          this.newsProvider.news = data;
+          // this.rootPageParams = this.news;
+          alert("[app component] loaded news! " + this.news);
+          this.rootPage = HomePage;               
+        });
+
+
+      // this.networkProvider.initializeNetworkEvents();
+
+      // this.events.subscribe("network:offline", () => {
+      //   alert("Konekcija prekinuta... " + this.network.type);
+      // });
+
+      // this.events.subscribe("network:online", () => {
+      //   alert("Konekcija online... " + this.network.type);
+      // });
+
 
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -86,10 +95,11 @@ export class MyApp {
   }
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
     if (page.component == NewsPage) {
       this.nav.push(page.component, {news: this.news});
+    }
+    else if (page.component == HomePage) {
+      this.nav.popToRoot();
     }
     else {
       this.nav.push(page.component);

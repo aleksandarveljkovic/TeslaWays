@@ -1,6 +1,12 @@
 import { Geofence } from '@ionic-native/geofence';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import { 
+  IonicPage, 
+  NavController, 
+  NavParams, 
+  Platform, 
+  AlertController, 
+  LoadingController} from 'ionic-angular';
 import {
   GoogleMaps,
   GoogleMap,
@@ -14,6 +20,8 @@ import {
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { Tour } from '../../objekat/tura';
+
+
 
 
 /**
@@ -41,33 +49,23 @@ export class GamePage {
     },
     zoom: 18
   };
-  myLocRealMarker: Marker;
 
-  //44.8064000 20.48291
-  geoLocations = 
-    [{lat: 44.818137, lng: 20.456649}, 
-      {lat: 44.816496, lng: 20.456625}, 
-      {lat: 44.820114, lng: 20.459243}];
-  
   tours: Tour[];
+  locations: any;
+  currentGeofenceTriggered: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public platform: Platform, 
               public geolocation: Geolocation, 
-              private geofence : Geofence) {
-    geofence.initialize().then(() => {
-      alert('geofence ready');
-      
-    });
-
-    this.tours = this.navParams.get('tours');
-    alert(this.tours[0].locations[0].questions[0].answers);
+              private geofence : Geofence,
+              private alertCtrl: AlertController) {
+    
   }
 
   ionViewWillEnter() {
     this.platform.ready().then(() => {
-      alert("About to update!");
+      // alert("About to update!");
       this.updatePosition();
     });
   }
@@ -78,6 +76,16 @@ export class GamePage {
     // alert("debug");
     this.platform.ready().then(() => {
       alert("Platform ready!!!");
+
+      this.geofence.initialize().then(() => {
+        alert('geofence ready');
+        
+      });
+  
+      this.tours = this.navParams.get('tours');
+      // alert(this.tours[0].locations[0].questions[0].answers);
+      this.locations = this.tours[0].locations;
+
       this.loadMap();
 
       // this.map.on(GoogleMapsEvent.MAP_READY).subscribe(() => {
@@ -98,8 +106,6 @@ export class GamePage {
     watcher.subscribe((data) => {
 
       let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);
-
-      
       
       // alert(this.visibleRegion.farLeft.lat + " " + this.visibleRegion.farLeft.lng);
       
@@ -137,8 +143,21 @@ export class GamePage {
         this.map = GoogleMaps.create('map_canvas', mapOptions);
         
         // alert("-----"+this.visibleRegion.farLeft.lng);
-        // this.visibleRegion = this.map.getVisibleRegion();
-        // this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe(this.getVisibleRegion);
+        
+        this.map.on(GoogleMapsEvent.MAP_READY)
+          .subscribe(() => {
+            alert("MAP READY triggered!");
+            // let nesto = this.map.getVisibleRegion();
+            // alert(nesto.southwest + " " + nesto.northeast);
+            
+            // this.visibleRegion = this.map.getVisibleRegion();
+            // // alert(this.visibleRegion.farRight.lat + " " + this.visibleRegion.farRight.lng);
+            // this.map
+            //   .fromLatLngToPoint(this.visibleRegion.farRight)
+            //   .then((data) => {
+            //     alert("[from latlngtopoint] " + data.keys.arguments);
+            //   });
+          });
 
         this.myLocationMarker = {
           title: 'Starting position',
@@ -152,11 +171,7 @@ export class GamePage {
         };
         this.map.addMarker(this.myLocationMarker).then((marker: Marker) => {
           marker.showInfoWindow();
-          this.myLocRealMarker = marker;
-          // callback();
         });
-
-        // alert("stampam mapu: " + this.map);
 
         this.addMarkers();
         
@@ -172,9 +187,9 @@ export class GamePage {
 
   addMarkers() {
     let i = 1;
-    this.geoLocations.forEach(element => {
+    this.locations.forEach(element => {
       this.map.addMarker({
-        title: 'Hardcoded '+i,
+        title: element.id,
         icon: 'blue', //ovde moze nasa ikonica!!!
         animation: 'DROP',
         position: {
@@ -185,7 +200,7 @@ export class GamePage {
       }).then((marker: Marker) => {
         marker.showInfoWindow();
         // alert("pre setgeo: " + element.lat + " " + element.lng);
-        this.setGeofence('Hardcoded '+i, element.lat, element.lng, "Muzej", "Ovo je lep muzej", i);
+        this.setGeofence(element.id, element.lat, element.lng, element.title, "Ovo je lep muzej", i);
       });
 
       i++;
@@ -209,11 +224,47 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      alert("Dodao sam geofence");      
+      // alert("Dodao sam geofence");      
     }).catch((err) => {
       alert(err.message);
     });
 
+    this.geofence.onTransitionReceived()
+      .subscribe(() => {
+        // alert(response);
+        // alert("Usao si u geofence, sad bih ti pop upovao pitanje\n" + geofence.keys);
+        this.popUpQuestion();
+      });
+
+  }
+
+  popUpQuestion() {
+    const buttons = [{
+      text: "Odgovori",
+    }, "Dismiss"];
+
+    const inputs = [{
+      type: "radio",
+      value: "tekst 1",
+      id: "1",
+      label: "Ponudjeni odgovor 1"
+    }, 
+    {
+      type: "radio",
+      value: "tekst 2",
+      id: "2",
+      label: "Ponudjeni odgovor 2"
+    }
+  ];
+
+    const options = {
+      title: "Pitanje",
+      subTitle: "Pitanje za lokaciju ",
+      buttons: buttons,
+      inputs: inputs
+    };
+    const alert = this.alertCtrl.create(options);
+    alert.present();
   }
 
 }

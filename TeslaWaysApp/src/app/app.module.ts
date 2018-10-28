@@ -1,3 +1,5 @@
+import { Network } from '@ionic-native/network';
+import { NetworkProvider } from './../providers/network/network';
 import { SightsPage } from './../pages/sights/sights';
 import { TermsOfUsePage } from './../pages/terms-of-use/terms-of-use';
 import { AboutProjectPage } from './../pages/about-project/about-project';
@@ -7,7 +9,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NewsPage } from './../pages/news/news';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
 //import { IonicImageLoader } from 'ionic-image-loader';
 
 
@@ -67,9 +69,12 @@ import { ObjectProvider } from '../providers/object/object';
     GoogleMaps,
     ObjectProvider,
     NewsProvider,
+    NetworkProvider,
+    Network,    
     // LocationService,
     Geolocation, 
-    Geofence
+    Geofence,
+    NetworkProvider
   ]
 })
 export class AppModule {}
