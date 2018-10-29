@@ -96,4 +96,5 @@
     </plugin>
     <plugin name="cordova-plugin-geofence" spec="0.7.0" />
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
+    <plugin name="cordova-sqlite-storage" spec="^2.5.0" />
 </widget>

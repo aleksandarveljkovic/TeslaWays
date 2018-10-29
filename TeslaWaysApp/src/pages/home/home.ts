@@ -11,6 +11,8 @@ import { NavController, Platform, NavParams } from 'ionic-angular';
 import 'leaflet-routing-machine';
 import { GamePage } from '../game/game';
 
+import { Storage } from '@ionic/storage';
+
 
 @Component({
   selector: 'page-home',
@@ -21,13 +23,28 @@ export class HomePage {
   tours: any;
   news: any;
   helper: any;
+  random : number;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               public platform: Platform, 
               public objectProvider: ObjectProvider,
-              public newsProvider: NewsProvider) {
+              public newsProvider: NewsProvider,
+              private storage : Storage) {
     
+  }
+
+  setStorage() {
+    this.random = Math.random();
+    this.storage.set('random', this.random.toString());
+  }
+
+  storageTest() {
+    this.storage.get('random').then((val) => {
+      alert(val);
+    }).catch(() => {
+      alert("nema ga");
+    });
   }
 
   ionViewDidLoad() {
@@ -36,6 +53,7 @@ export class HomePage {
       this.news = this.newsProvider.news;
       alert("[home] " + this.news.articles[0].title);
       this.helper = [this.news.articles[0], this.news.articles[1], this.news.articles[2]];
+      //this.setStorage();
     });
     
 

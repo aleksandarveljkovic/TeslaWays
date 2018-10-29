@@ -1,5 +1,6 @@
+import { Question } from './../../objekat/question';
 import { Geofence } from '@ionic-native/geofence';
-import { Component } from '@angular/core';
+import { Component, WrappedValue } from '@angular/core';
 import { 
   IonicPage, 
   NavController, 
@@ -20,7 +21,8 @@ import {
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { Tour } from '../../objekat/tura';
-
+import { Storage } from '@ionic/storage';
+import { isRightSide } from 'ionic-angular/umd/util/util';
 
 
 
@@ -38,6 +40,7 @@ import { Tour } from '../../objekat/tura';
 })
 export class GamePage {
   visibleRegion: VisibleRegion;
+  currentLocationIndex : number;
   map : GoogleMap;
   myLocationMarker: {
     title: 'Starting position',
@@ -59,7 +62,8 @@ export class GamePage {
               public platform: Platform, 
               public geolocation: Geolocation, 
               private geofence : Geofence,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController, 
+              private storage : Storage) {
     
   }
 
@@ -120,6 +124,10 @@ export class GamePage {
     alert("----" + this.visibleRegion);
   }
 
+  getCurrentIndexFromStorage() : Promise<any> {
+    return this.storage.get('index');
+  }
+
   loadMap() {
 
       
@@ -127,6 +135,12 @@ export class GamePage {
         enableHighAccuracy: true
       };
       
+      const currInd = this.getCurrentIndexFromStorage();
+      currInd
+        .then((val) => {
+          this.currentLocationIndex = val;
+        })
+
       this.geolocation.getCurrentPosition(option).then((position) => {
         alert("current location via native geolocation: " + position.coords.latitude + " " + position.coords.longitude);
         let mapOptions: GoogleMapOptions = {
@@ -173,7 +187,8 @@ export class GamePage {
           marker.showInfoWindow();
         });
 
-        this.addMarkers();
+        //this.addMarkers();
+        this.setCurrentState();
         
         
       }).catch((err) => {
@@ -207,6 +222,38 @@ export class GamePage {
     });
   }
 
+  addMarker(index : any) {
+    this.map.addMarker({
+      title : this.locations[index].id, 
+      icon : 'blue',
+      animation : 'DROP',
+      position : {
+        lat : this.locations[index].lat, 
+        lng : this.locations[index].lng, 
+      },
+      zoom : 18
+
+    }).then((marker : Marker) => {
+      this.setGeofence(this.locations[index].id, this.locations[index].lat, this.locations[index].lng, this.locations[index].title, "Ovo je lep muzej", index);
+    });
+  }
+
+  setCurrentState() {
+
+    if(this.currentLocationIndex == undefined) {
+        this.addMarker(0);
+        this.currentLocationIndex=0;
+    }
+    else {
+
+      for(let i=0;i<=this.currentLocationIndex;i++) {
+        this.addMarker(i);
+      }
+    }
+
+  }
+
+
   setGeofence(id:string, lat :number, lng:number, title : string, desc : string, idx : number) {
     let fence = {
       id : id,
@@ -238,33 +285,51 @@ export class GamePage {
 
   }
 
+  wrapper() {
+    alert("Dobar si");
+  }
+
   popUpQuestion() {
+
+    let questions: Question[] = this.locations[this.currentLocationIndex].questions;
+    let a = Math.floor((Math.random()*100)%questions.length);
+    let q = questions[a];
+
     const buttons = [{
       text: "Odgovori",
+      handler : (data) => {
+        if(data == q.true) {
+          this.wrapper();
+          
+        }
+      }
     }, "Dismiss"];
 
     const inputs = [{
       type: "radio",
-      value: "tekst 1",
+      value: q.answers[0],
       id: "1",
-      label: "Ponudjeni odgovor 1"
+      label: q.answers[0]
     }, 
     {
       type: "radio",
-      value: "tekst 2",
+      value: q.answers[1],
       id: "2",
-      label: "Ponudjeni odgovor 2"
+      label: q.answers[1]
     }
   ];
 
     const options = {
       title: "Pitanje",
-      subTitle: "Pitanje za lokaciju ",
+      subTitle: "Pitanje za lokaciju " + this.locations[this.currentLocationIndex].title,
       buttons: buttons,
-      inputs: inputs
+      inputs: inputs, 
+      message : q.question
     };
     const alert = this.alertCtrl.create(options);
     alert.present();
+    this.currentLocationIndex = 2;
+    this.storage.set('index', this.currentLocationIndex);
   }
 
 }

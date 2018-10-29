@@ -18,14 +18,28 @@ export class ObjectProvider {
   }
 
   questions : Question[] = [
-    {id: 1, question: "Ko je najjaci", answers: ["Andria","Dimitrije"], true: "Andria"},
-    {id: 2, question: "Ko je najjaciiii", answers: ["Andria","Dimitrije"], true: "Dimitrije"},
+    {id: 1, question: "Ko je najjaci", answers: ["Andrija","Dimitrije"], true: "Andrija"},
+    {id: 2, question: "Ko je najjaciiii", answers: ["Andrija","Dimitrije"], true: "Dimitrije"},
   ];
 
   locations : Location[] = [
-    {
+    
+      {
+        id: "Lokacija geofence test oko faksa",
+        index: 0,
+        adress: "asdasdadresaasdasd",
+        lat: 44.818853,  
+        lng: 20.459642,
+        title : "Muzej Tesla", // naziv lokacije
+        content : "DSA",
+        urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+        questions: this.questions,
+        status: "discovered", // locked, undiscovered, answered
+        answered: false
+      },
+      {
       id: "nekaLokacija",
-      index: 0,
+      index: 1,
       adress: "adresa",
       lat: 44.818137,
       lng: 20.456649,
@@ -38,7 +52,7 @@ export class ObjectProvider {
     },
     {
       id: "nekaDruga",
-      index: 1,
+      index: 2,
       adress: "adresaasdasd",
       lat: 44.816496,
       lng: 20.456625,
@@ -51,7 +65,7 @@ export class ObjectProvider {
     },
     {
       id: "Lokacija Bezanijska kosa geofence test",
-      index: 2,
+      index: 3,
       adress: "adresaasdasd",
       lat: 44.809517,
       lng: 20.366628,
@@ -62,7 +76,6 @@ export class ObjectProvider {
       status: "discovered", // locked, undiscovered, answered
       answered: false
     }
-    
   ];
   
   tours : Tour[] = [

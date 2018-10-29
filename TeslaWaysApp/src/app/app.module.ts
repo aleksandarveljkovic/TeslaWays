@@ -27,6 +27,8 @@ import {GoogleMaps} from "@ionic-native/google-maps";
 import {Geofence} from "@ionic-native/geofence"
 import { ObjectProvider } from '../providers/object/object';
 
+import { IonicStorageModule } from '@ionic/storage';
+
 //  import { NativeLocator} from '../nativeLocator/nativeLocator';
 
 @NgModule({
@@ -46,6 +48,10 @@ import { ObjectProvider } from '../providers/object/object';
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpClientModule,
+    IonicStorageModule.forRoot({
+      name: '__mydb',
+        driverOrder:['indexeddb', 'sqlite', 'websql']
+    })
     //IonicImageLoader.forRoot()
 
   ],
