@@ -33,19 +33,10 @@ export class NewsPage {
     
   } 
 
-  // TODO nemoj dva puta da ucitavas!!!!
   ionViewDidLoad() {
     if (this.navParams.get("news")) {
       this.data = this.navParams.get("news");
-      alert(this.data);
     } 
-    // else {
-    //   this.newsProvider
-    //   .getData()
-    //   .subscribe((data) => {
-    //     this.data = data;
-    //   });
-    // }  
   }
 
   initImages() {

@@ -18,45 +18,44 @@ export class ObjectProvider {
   }
 
   questions : Question[] = [
-    {id: 1, question: "Ko je najjaci", answers: ["Andrija","Dimitrije"], true: "Andrija"},
-    {id: 2, question: "Ko je najjaciiii", answers: ["Andrija","Dimitrije"], true: "Dimitrije"},
+    {id: 0, question: "Ko je najjaci", answers: ["Andrija","Dimitrije"], true: "Andrija"},
+    {id: 1, question: "Ko je najjaciiii", answers: ["Andrija","Dimitrije"], true: "Dimitrije"},
   ];
 
   locations : Location[] = [
-    
-      {
-        id: "Lokacija geofence test oko faksa",
-        index: 0,
-        adress: "asdasdadresaasdasd",
-        lat: 44.818853,  
-        lng: 20.459642,
-        title : "Muzej Tesla", // naziv lokacije
-        content : "DSA",
-        urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
-        questions: this.questions,
-        status: "discovered", // locked, undiscovered, answered
-        answered: false
-      },
-      {
-      id: "nekaLokacija",
-      index: 1,
-      adress: "adresa",
-      lat: 44.818137,
-      lng: 20.456649,
-      title : "Lokacija 1", // naziv lokacije
-      content : "DSA",
+    {
+      id: "Lokacija geofence test oko faksa",
+      index: 0,
+      adress: "Studentski trg 16",
+      lat: 44.820119,  
+      lng:  20.459144,
+      title : "Muzej Tesla", // naziv lokacije
+      content : "Nestoooooooo",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
       status: "discovered", // locked, undiscovered, answered
       answered: false
     },
     {
-      id: "nekaDruga",
+      id: "nekaLokacija",
+      index: 1,
+      adress: "adresa",
+      lat: 44.820715, 
+      lng: 20.458832,
+      title : "Lokacija test passegenrs desni", // naziv lokacije
+      content : "neki sadrzaj lokacije",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
+    },
+    {
+      id: "iznad parka",
       index: 2,
-      adress: "adresaasdasd",
-      lat: 44.816496,
-      lng: 20.456625,
-      title : "Lokacija 2", // naziv lokacije
+      adress: "neka adresa bla bka",
+      lat: 44.818904, 
+      lng: 20.457434,
+      title : "Lokacija 4", // naziv lokacije
       content : "DSA",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
@@ -75,7 +74,11 @@ export class ObjectProvider {
       questions: this.questions,
       status: "discovered", // locked, undiscovered, answered
       answered: false
-    }
+    },
+      
+      
+    
+    
   ];
   
   tours : Tour[] = [

@@ -77,7 +77,6 @@ export class GamePage {
 
 
   ionViewDidLoad() {
-    // alert("debug");
     this.platform.ready().then(() => {
       alert("Platform ready!!!");
 
@@ -86,60 +85,40 @@ export class GamePage {
         
       });
   
-      this.tours = this.navParams.get('tours');
-      // alert(this.tours[0].locations[0].questions[0].answers);
-      this.locations = this.tours[0].locations;
-
-      this.loadMap();
-
-      // this.map.on(GoogleMapsEvent.MAP_READY).subscribe(() => {
-      //   alert("Mapa spremna!!!");
-      //   this.proba();
-      // });
+      
+        this.tours = this.navParams.get('tours');
+        // alert(this.tours[0].locations[0].questions[0].answers);
+        this.locations = this.tours[0].locations;
+  
+        this.loadMap();
+      
     }).catch((err) => {
       alert(err);
     });
-    // alert("debug 2");
+    
   }
 
-  updatePosition() {
-    // alert("About to update osition....");
-    
+  
+
+  updatePosition() { 
     let watcher = this.geolocation.watchPosition();
 
     watcher.subscribe((data) => {
-
-      let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);
-      
-      // alert(this.visibleRegion.farLeft.lat + " " + this.visibleRegion.farLeft.lng);
-      
+      let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);   
       this.map.setCameraTarget(currentLocation);
-
     });
   }
 
-  proba() {
-    alert("u callbacku");
-    this.visibleRegion = this.map.getVisibleRegion();
-    alert("----" + this.visibleRegion);
+  getCurrentObjectFromStorage() : Promise<any> {
+    return this.storage.get("index");
   }
 
-  getCurrentIndexFromStorage() : Promise<any> {
-    return this.storage.get('index');
-  }
-
-  loadMap() {
-
-      
+  loadMap() {      
       let option: MyLocationOptions = {
         enableHighAccuracy: true
       };
       
-      const currInd = this.getCurrentIndexFromStorage();
-      currInd
-        .then((val) => {
-          this.currentLocationIndex = val;
-        })
+      
 
       this.geolocation.getCurrentPosition(option).then((position) => {
         alert("current location via native geolocation: " + position.coords.latitude + " " + position.coords.longitude);
@@ -155,22 +134,10 @@ export class GamePage {
         };    
         
         this.map = GoogleMaps.create('map_canvas', mapOptions);
-        
-        // alert("-----"+this.visibleRegion.farLeft.lng);
-        
+
         this.map.on(GoogleMapsEvent.MAP_READY)
           .subscribe(() => {
             alert("MAP READY triggered!");
-            // let nesto = this.map.getVisibleRegion();
-            // alert(nesto.southwest + " " + nesto.northeast);
-            
-            // this.visibleRegion = this.map.getVisibleRegion();
-            // // alert(this.visibleRegion.farRight.lat + " " + this.visibleRegion.farRight.lng);
-            // this.map
-            //   .fromLatLngToPoint(this.visibleRegion.farRight)
-            //   .then((data) => {
-            //     alert("[from latlngtopoint] " + data.keys.arguments);
-            //   });
           });
 
         this.myLocationMarker = {
@@ -187,45 +154,25 @@ export class GamePage {
           marker.showInfoWindow();
         });
 
-        //this.addMarkers();
-        this.setCurrentState();
-        
-        
+
+      const currInd = this.getCurrentObjectFromStorage();
+      currInd.then((val) => {
+        this.currentLocationIndex = val;  
+        alert("currindex " + this.currentLocationIndex);
+
+        this.setCurrentState();       
+      });
+
+              
       }).catch((err) => {
         alert(err.message);
       });
-  }
-
-  getVisibleRegion() {
-    this.visibleRegion = this.map.getVisibleRegion();
-  }
-
-  addMarkers() {
-    let i = 1;
-    this.locations.forEach(element => {
-      this.map.addMarker({
-        title: element.id,
-        icon: 'blue', //ovde moze nasa ikonica!!!
-        animation: 'DROP',
-        position: {
-          lat: element.lat, 
-          lng: element.lng
-        },
-        zoom: 18
-      }).then((marker: Marker) => {
-        marker.showInfoWindow();
-        // alert("pre setgeo: " + element.lat + " " + element.lng);
-        this.setGeofence(element.id, element.lat, element.lng, element.title, "Ovo je lep muzej", i);
-      });
-
-      i++;
-    });
-  }
+  }  
 
   addMarker(index : any) {
     this.map.addMarker({
       title : this.locations[index].id, 
-      icon : 'blue',
+      icon : 'blue', // e brate i ovde moze nasa ikonica!!!
       animation : 'DROP',
       position : {
         lat : this.locations[index].lat, 
@@ -234,23 +181,26 @@ export class GamePage {
       zoom : 18
 
     }).then((marker : Marker) => {
-      this.setGeofence(this.locations[index].id, this.locations[index].lat, this.locations[index].lng, this.locations[index].title, "Ovo je lep muzej", index);
+      if (index == this.currentLocationIndex)
+        this.setGeofence(this.locations[this.currentLocationIndex].index + "", 
+                          this.locations[this.currentLocationIndex].lat, 
+                          this.locations[this.currentLocationIndex].lng, 
+                          this.locations[this.currentLocationIndex].title, 
+                          "Ovo je lep muzej", 
+                          index);
     });
   }
 
   setCurrentState() {
-
-    if(this.currentLocationIndex == undefined) {
-        this.addMarker(0);
-        this.currentLocationIndex=0;
+    if (this.currentLocationIndex == undefined) {
+      this.currentLocationIndex = 0;
+      this.addMarker(0);
     }
     else {
-
-      for(let i=0;i<=this.currentLocationIndex;i++) {
+      for (let i = 0; i <= this.currentLocationIndex; i++) {
         this.addMarker(i);
       }
     }
-
   }
 
 
@@ -259,7 +209,7 @@ export class GamePage {
       id : id,
       latitude : lat, 
       longitude : lng, 
-      radius : 70, 
+      radius : 100, 
       transitionType : 1,
       notification : {
         id : idx,
@@ -271,26 +221,23 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      // alert("Dodao sam geofence");      
+      alert("E bato evo geofence-a :) na lokaciji " + id);   
     }).catch((err) => {
       alert(err.message);
     });
 
     this.geofence.onTransitionReceived()
       .subscribe(() => {
-        // alert(response);
-        // alert("Usao si u geofence, sad bih ti pop upovao pitanje\n" + geofence.keys);
+        this.alertWrap("Usao u geofence " + id);
         this.popUpQuestion();
       });
 
   }
 
-  wrapper() {
-    alert("Dobar si");
-  }
+  
 
   popUpQuestion() {
-
+    this.alertWrap("Usao sam u popup q");
     let questions: Question[] = this.locations[this.currentLocationIndex].questions;
     let a = Math.floor((Math.random()*100)%questions.length);
     let q = questions[a];
@@ -299,37 +246,94 @@ export class GamePage {
       text: "Odgovori",
       handler : (data) => {
         if(data == q.true) {
-          this.wrapper();
-          
+          this.geofence
+            .remove(this.locations[this.currentLocationIndex].index + "")
+            .then(() => {
+              this.alertWrap("removed geofence from location " + this.locations[this.currentLocationIndex].id);
+              this.locations[this.currentLocationIndex].answered = true;
+              this.wrapper();
+            });
         }
       }
-    }, "Dismiss"];
+     }, "Zatvori"];
 
-    const inputs = [{
-      type: "radio",
-      value: q.answers[0],
-      id: "1",
-      label: q.answers[0]
-    }, 
-    {
-      type: "radio",
-      value: q.answers[1],
-      id: "2",
-      label: q.answers[1]
+    const answers: any[] = q.answers;
+
+    let inputs = new Array();
+
+    let offAns;  
+
+    for (let i = 0; i < answers.length; i++) {
+      offAns = {
+        type: "radio",
+        value: answers[i],
+        id: i,
+        label: answers[i]
+      }
+
+      inputs.push(offAns); 
     }
-  ];
 
     const options = {
       title: "Pitanje",
-      subTitle: "Pitanje za lokaciju " + this.locations[this.currentLocationIndex].title,
+      subTitle: "Pitanje za lokaciju " + this.locations[this.currentLocationIndex].id,
       buttons: buttons,
       inputs: inputs, 
       message : q.question
     };
     const alert = this.alertCtrl.create(options);
     alert.present();
-    this.currentLocationIndex = 2;
-    this.storage.set('index', this.currentLocationIndex);
   }
+
+  wrapper() {
+    alert("Tacan odgovor juuuhuuuu :)");
+
+    this.currentLocationIndex++;
+    this.storage
+      .set("index", this.currentLocationIndex)
+      .then(() => {
+        this.setCurrentState();
+      });
+  }
+
+  clearStorage() {
+    this.storage
+      .ready()
+      .then(() => {
+        this.storage
+          .remove("index")
+          .then(() => {
+            alert("Removed index...");
+          })
+          .catch(() => {
+            alert("There's no index to remove :)");
+          });
+      });
+  }
+
+  alertWrap(param) {
+    alert(param);
+  } 
+
+  // addMarkers() {
+  //   let i = 1;
+  //   this.locations.forEach(element => {
+  //     this.map.addMarker({
+  //       title: element.id,
+  //       icon: 'blue', //ovde moze nasa ikonica!!!
+  //       animation: 'DROP',
+  //       position: {
+  //         lat: element.lat, 
+  //         lng: element.lng
+  //       },
+  //       zoom: 18
+  //     }).then((marker: Marker) => {
+  //       marker.showInfoWindow();
+  //       this.setGeofence(element.id, element.lat, element.lng, element.title, "Ovo je lep muzej", i);
+  //     });
+
+  //     i++;
+  //   });
+  // }
 
 }

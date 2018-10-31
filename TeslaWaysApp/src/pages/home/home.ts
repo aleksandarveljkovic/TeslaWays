@@ -51,7 +51,7 @@ export class HomePage {
     this.platform.ready().then(() => {
       this.tours = this.objectProvider.tours;
       this.news = this.newsProvider.news;
-      alert("[home] " + this.news.articles[0].title);
+      // alert("[home] " + this.news.articles[0].title);
       this.helper = [this.news.articles[0], this.news.articles[1], this.news.articles[2]];
       //this.setStorage();
     });
