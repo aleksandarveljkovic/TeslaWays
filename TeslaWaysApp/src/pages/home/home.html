@@ -11,10 +11,10 @@
 
   <div id="tourDiv">
     <ion-title>Interaktivna tura</ion-title>
-    <ion-card *ngFor="let tour of tours" >
-      <ion-card-header>
-          {{ tour.tourTitle }}
-      </ion-card-header>
+    <ion-card> <!--*ngFor="let tour of tours"-->
+      <!-- <ion-card-header>
+          {{ tours.tourTitle }}
+      </ion-card-header> -->
       <ion-card-content>
           <button ion-button (click)="startGame()">Zapocni turu</button>  
       </ion-card-content>

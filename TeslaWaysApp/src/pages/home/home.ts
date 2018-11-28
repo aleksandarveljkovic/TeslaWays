@@ -20,7 +20,7 @@ import { Storage } from '@ionic/storage';
 })
 
 export class HomePage {
-  tours: any;
+  tours: Tour;
   news: any;
   helper: any;
   random : number;
@@ -53,11 +53,20 @@ export class HomePage {
       this.news = this.newsProvider.news;
       // alert("[home] " + this.news.articles[0].title);
       this.helper = [this.news.articles[0], this.news.articles[1], this.news.articles[2]];
+      // alert("[home] " + this.tours.tourTitle);
       //this.setStorage();
     });
     
 
   }
+
+  checkForObject(): boolean {
+    if (this.tours.tourTitle != undefined) {
+      return true;
+    }
+    return false;
+  }
+
   startGame() {
     this.navCtrl.push(GamePage, {tours: this.tours});
   }
