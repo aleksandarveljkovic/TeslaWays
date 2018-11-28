@@ -78,15 +78,15 @@ export class MyApp {
         });
 
 
-      // this.networkProvider.initializeNetworkEvents();
+      this.networkProvider.initializeNetworkEvents();
 
-      // this.events.subscribe("network:offline", () => {
-      //   alert("Konekcija prekinuta... " + this.network.type);
-      // });
+      this.events.subscribe("network:offline", () => {
+        alert("Konekcija prekinuta... " + this.network.type);
+      });
 
-      // this.events.subscribe("network:online", () => {
-      //   alert("Konekcija online... " + this.network.type);
-      // });
+      this.events.subscribe("network:online", () => {
+        alert("Konekcija online... " + this.network.type);
+      });
 
 
       this.statusBar.styleDefault();
