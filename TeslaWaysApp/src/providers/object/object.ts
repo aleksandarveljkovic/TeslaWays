@@ -22,6 +22,7 @@ export class ObjectProvider {
     {id: 1, question: "Ko je najjaciiii", answers: ["Andrija","Dimitrije"], true: "Dimitrije"},
   ];
 
+  // Testiranje oko faksa
   locations : Location[] = [
     {
       id: "test oko faksa",
@@ -76,7 +77,7 @@ export class ObjectProvider {
       answered: false
     }
   ];
-
+  // Tesiranje Bezanija
   bezanijskaKosaLocations : Location[] = [
     {
       id: "test 0",
@@ -118,12 +119,65 @@ export class ObjectProvider {
       answered: false
     }
   ];
-
-
+  // Testiranje Banja
+  visnjickaBanjaLocations : Location[] = [
+    {
+      id: "za izbacivanje",
+      index: 0,
+      adress: "asd",
+      lat: 44.818185,    
+      lng:  20.531387,
+      title : "kod nas", // naziv lokacije
+      content : "Nestoooooooo",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
+    },
+    {
+      id: "Aroma",
+      index: 1,
+      adress: "adresa",
+      lat: 44.815981, 
+      lng:  20.532315,
+      title : "Aroma", // naziv lokacije
+      content : "neki sadrzaj lokacije",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
+    },
+    {
+      id: "Panter",
+      index: 2,
+      adress: "adresaasdasd",
+      lat: 44.815981, 
+      lng: 20.532315,
+      title : "Panter", // naziv lokacije
+      content : "DSA",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
+    },
+    {
+      id: "Vrtic",
+      index: 3,
+      adress: "adresaasdasd",
+      lat: 44.815918,  
+      lng: 20.534989,
+      title : "Vrtic", // naziv lokacije
+      content : "DSA",
+      urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
+      questions: this.questions,
+      status: "discovered", // locked, undiscovered, answered
+      answered: false
+    }
+  ];
 
   
   tours : Tour = 
-    {tourTitle: "Teslin put kroz Beograd", locations: this.bezanijskaKosaLocations};
+    {tourTitle: "Teslin put kroz Beograd", locations: this.visnjickaBanjaLocations};
 
   getData(url): Tour {
     // return this.http.get("/dajObjekat"); //ovde url kad dignem na localhost

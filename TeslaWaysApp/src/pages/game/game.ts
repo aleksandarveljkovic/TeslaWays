@@ -60,14 +60,18 @@ export class GamePage {
   answeredLocations: number[]; // Niz indeksa lokacija koje su odgovorene tacno
   currrentCoords: LatLng;
   setAnsweredQuestions: Set<number> = new Set();
+
+  currentGeofences: Set<number> = new Set();
+
   endGameAlert = this.alertCtrl.create({
     title: 'VUUUUHUUUU',
     subTitle: 'Ti si ultra car i odgovorio si sva pitanja zavrsio rutu itd itd :)',
     buttons: ['Zatvori']
   });
+
   gameFinished: boolean = false;
 
-
+  NUM_OF_CLOSEST: number = 2;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -82,7 +86,7 @@ export class GamePage {
   ionViewWillEnter() {
     this.platform.ready().then(() => {
       // alert("About to update!");
-      this.updatePosition();
+      // this.updatePosition();
     });
   }
 
@@ -90,16 +94,15 @@ export class GamePage {
 
   ionViewDidLoad() {
     this.platform.ready().then(() => {
-      // alert("Platform ready!!!");
 
       this.geofence.initialize().then(() => {
-        alert('geofence ready');
+        // alert('geofence ready');
         
       });
     
       // JOS SE POIGRAJ KAD JE IGRA ZAVRSENA STA SE DESAVA
       this.storage.ready().then(() => {
-        alert("Storage ready!")
+        // alert("Storage ready!")
         
         this.storage.get("gameFinished")
           .then((value) => {
@@ -108,29 +111,48 @@ export class GamePage {
             this.loadSetAnswered();
             this.tours = this.navParams.get('tours');
             this.locations = this.tours.locations;
-            
-            // Ovde ce se za svaki i dodati geofence jer ga nema u skupu odgovorenih lokacija
-            // Treba da se izmeni tako da se postavlja samo na pet najblizih jer je ograncienje 20...
-            // PAZI NA OVO!!!
-            // for (let i = 0; i < this.locations.length; i++) {
-            //   this.addMarker(this.locations[i].index);
-            // }
           });
       });
-        
-
-        // this.sortLocations();
-
-        // this.locations.forEach(loc => {
-        //   alert(loc.index);
-        // });
-  
         this.loadMap();
       
     }).catch((err) => {
       alert(err);
     });
     
+  }
+
+  initializeMarkers() {
+    this.locations.forEach(location => {
+      this.map.addMarker({
+        title : location.id, 
+        icon : 'blue', // e brate i ovde moze nasa ikonica!!!
+        animation : 'DROP',
+        position : {
+          lat : location.lat, 
+          lng : location.lng, 
+        },
+        zoom : 18
+        
+      }).then((marker : Marker) => {
+        
+        // alert("Init marker id: " + marker.getId());
+        // this.getDistanceFromLatLonInKm(this.currrentCoords.lat, this.currrentCoords.lng, location.lat, location.lng);
+      });
+    });
+  }
+
+  sortLocations() {
+    const myLat = this.currrentCoords.lat;
+    const myLng = this.currrentCoords.lng;
+
+    this.locations.sort((a, b) => {
+      if (this.getDistanceFromLatLonInKm(myLat, myLng, a.lat, a.lng) < this.getDistanceFromLatLonInKm(myLat, myLng, b.lat, b.lng)) {
+        return -1;
+      }
+      else {
+        return 1;
+      }
+    });
   }
 
   loadSetAnswered() { 
@@ -153,16 +175,20 @@ export class GamePage {
       });
   }
 
+  lokacije = [{lat: 44.817800, lng: 20.531600}, {lat: 44.815981, lng: 20.532315}];
+  glupBrojac = 0;
   updatePosition() { 
     let watcher = this.geolocation.watchPosition();
 
-    setTimeout(() => {
-      watcher.subscribe((data) => {
-        let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
-        this.currrentCoords = currentLocation; 
-        this.map.setCameraTarget(currentLocation);
-      });  
-    }, 2000);
+    watcher.subscribe((data) => {
+      let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
+      this.currrentCoords = currentLocation; 
+      // let currentLocation = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng)
+      // this.currrentCoords = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng);
+      // this.glupBrojac++;
+      this.map.setCameraTarget(currentLocation);
+      this.intializeGeofences();
+    });  
     
   }
 
@@ -195,7 +221,32 @@ export class GamePage {
 
         this.map.on(GoogleMapsEvent.MAP_READY)
           .subscribe(() => {
-            alert("MAP READY triggered!");
+            // alert("MAP READY triggered!");
+            this.initializeMarkers();
+            // this.intializeGeofences();
+            this.sortLocations();
+
+            this.storage.get("currentGeofences")
+              .then(value => {
+                if (value == undefined) {
+                  this.locations.forEach((location, idx) => {
+                    if (!this.setAnsweredQuestions.has(location.index) && idx < this.NUM_OF_CLOSEST) {
+                      this.currentGeofences.add(location.index);
+                      this.setGeofence(location.id, 
+                        location.lat, 
+                        location.lng, 
+                        location.title, 
+                        location.content, 
+                        location.index);
+                      alert("dodajem na " + location.index);
+                    }
+                  });
+                }
+                else {
+                  this.currentGeofences = value;
+                }
+                this.updatePosition();
+              });
           });
 
         this.myLocationMarker = {
@@ -216,9 +267,9 @@ export class GamePage {
       const currInd = this.getCurrentObjectFromStorage();
       currInd.then((val) => {
         this.currentLocationIndex = val;  
-        alert("Current index from local storage: " + this.currentLocationIndex + "\nAbout to setCurrentState()");
+        // alert("Current index from local storage: " + this.currentLocationIndex + "\nAbout to setCurrentState()");
 
-        this.setCurrentState();       
+        // this.setCurrentState();       
       });
 
               
@@ -226,6 +277,110 @@ export class GamePage {
         alert(err.message);
       });
   }  
+
+  
+
+
+
+  // OVDE SMO BATO NAJJACI
+  intializeGeofences() {
+    // alert("About to initialize geofence");
+    this.sortLocations();
+    let setGeofenceHelper: Set<number> = new Set();
+
+    let count = this.NUM_OF_CLOSEST;
+    let cntNotAnswered = 0;
+
+    for (let i = 0; i < this.locations.length; i++) {
+      let index = this.locations[i].index;
+      if (!this.setAnsweredQuestions.has(index)) {
+        setGeofenceHelper.add(index);
+
+        cntNotAnswered++;
+        if (cntNotAnswered == this.NUM_OF_CLOSEST) {
+          break;
+        }
+
+        if (this.currentGeofences.has(index)) {
+          count--;
+        }
+      }
+    }
+
+    let arrGeofence = Array.from(setGeofenceHelper);
+
+    // presek
+    let intersect = new Set(arrGeofence.filter(x => this.currentGeofences.has(x)));
+
+
+    let msg = "velicina seta= "+intersect.size+"\npresek ona dva: ";
+    if (intersect.size != 0 ) {
+      intersect.forEach(el => {
+        msg += el + " ";
+      });
+    }
+    msg += "\n";
+    if (setGeofenceHelper.size != 0 ) {
+      setGeofenceHelper.forEach(el => {
+        msg += el + " ";
+      });
+    }
+    msg += "\ncurr:";
+    if (this.currentGeofences.size != 0 ) {
+      this.currentGeofences.forEach(el => {
+        msg += el + " ";
+      });
+    }
+
+    alert(msg);
+
+    for (let i = 0; i < this.locations.length; i++) {
+      let index = this.locations[i].index;
+      if (intersect.size == this.NUM_OF_CLOSEST) {
+        break;
+      }
+
+      if (!this.setAnsweredQuestions.has(index) && !intersect.has(index)) {
+        intersect.add(index);
+      }
+    }
+
+    this.currentGeofences.forEach(idx => {
+      if (!intersect.has(idx)) {
+        this.locations.forEach((loc) => {
+          if (loc.index == idx) {
+            // alert("Treba da skinem sa " + loc.title + " \nima indeks "+loc.index);
+            this.geofence
+              .remove(loc.index + "")
+              .then(() => {
+                this.alertWrap("[init geo] Removed geofence from location " + loc.index);
+                loc.answered = true;
+            });
+          }
+        });
+      }
+    });  
+    
+    intersect.forEach(idx => {
+      if (!this.currentGeofences.has(idx)) {
+        this.setGeofence(this.locations[idx].id, 
+          this.locations[idx].lat, 
+          this.locations[idx].lng, 
+          this.locations[idx].title, 
+          this.locations[idx].content, 
+          this.locations[idx].index);
+      }
+    });
+
+    this.currentGeofences = intersect;
+    this.storage.set("currentGeofences", this.currentGeofences)
+      .then(() => {
+        // alert("Upisao u memoriju current geofences");
+      })
+      .catch(() => {
+        alert("Greska pri upisu current geofences");
+      });
+  }
 
   addMarker(index : any) {
     alert("About to add marker on location: " + this.locations[index].id);
@@ -252,27 +407,29 @@ export class GamePage {
     });
   }
 
-  sortLocations() {
-    this.locations.sort((a, b):number => {
-      if (this.distance(a) < this.distance(b)) {
-        return -1;
-      }
-      else {
-        return 1;
-      }
-    });
-  }
+  getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = this.deg2rad(lat2-lat1);  // deg2rad below
+    var dLon = this.deg2rad(lon2-lon1); 
+    var a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ; 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; // Distance in km
 
-  distance(locationPosition: Location): number {
-    let dist = Math.sqrt(Math.pow(this.currrentCoords.lat - locationPosition.lat, 2) 
-                        - Math.pow(this.currrentCoords.lng - locationPosition.lng, 2));
-    
-    return dist;
+    // alert("distance for this point: " + d);
+    return d;
+  }
+  
+  deg2rad(deg) {
+    return deg * (Math.PI/180);
   }
 
   setCurrentState() {
     if (this.currentLocationIndex == undefined) {
-      alert("In current state, index from memory is null");
+      // alert("In current state, index from memory is null");
       // this.sortLocations();
 
       // this.locations.forEach(loc => {
@@ -280,7 +437,7 @@ export class GamePage {
       //   });
 
       this.currentLocationIndex = this.locations[0].index; // Biram najblizu
-      alert("Posto nisam nasao biram indeks: " + this.currentLocationIndex);
+      // alert("Posto nisam nasao biram indeks: " + this.currentLocationIndex);
       this.addMarker(this.currentLocationIndex);
     }
     else {
@@ -299,12 +456,12 @@ export class GamePage {
 
 
   setGeofence(id:string, lat :number, lng:number, title : string, desc : string, idx : number) {
-    alert(id + " " +lat + " " +lng + " " +title  + " " +desc + " " +idx);
+    // alert(id + " " +lat + " " +lng + " " +title  + " " +desc + " " +idx);
     let fence = {
       id : id,
       latitude : lat, 
       longitude : lng, 
-      radius : 500, 
+      radius : 150, 
       transitionType : 1,
       notification : {
         id : idx,
@@ -316,7 +473,7 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      alert("E bato evo geofence-a :) na lokaciji " + id);   
+      // alert("E bato evo geofence-a :) na lokaciji " + id);   
     }).catch((err) => {
       alert(err.message);
     });
@@ -324,7 +481,7 @@ export class GamePage {
     this.geofence.onTransitionReceived()
       .subscribe(() => {
         this.alertWrap("Usao u geofence " + id + " sa indeksom " + idx);
-        this.popUpQuestion();
+        // this.popUpQuestion();
       });
 
   }
@@ -379,17 +536,6 @@ export class GamePage {
     };
     const alert = this.alertCtrl.create(options);
     alert.present();
-  }
-
-  wrapper() {
-    alert("Tacan odgovor juuuhuuuu :)");
-
-    this.currentLocationIndex++;
-    this.storage
-      .set("index", this.currentLocationIndex)
-      .then(() => {
-        this.setCurrentState();
-      });
   }
 
   allAnswered(): boolean {
@@ -456,44 +602,31 @@ export class GamePage {
       .then(() => {
         this.storage.remove("index")
           .then(() => {
-            alert("Removed index...");
+            // alert("Removed index...");
           })
           .catch(() => {
             alert("There's no index to remove :)");
           });
         this.storage.remove("setAnsweredQuestions")
           .then(() => {
-            alert("Removed set...");
+            // alert("Removed set...");
+
+            this.storage.remove("currentGeofences")
+            .then(() => {
+              // alert("Removed set...");
+            })
+            .catch(() => {
+              // alert("No set to be removed");
+            });
           })
           .catch(() => {
             alert("No set to be removed");
           });
+
       });
   }
 
   alertWrap(param) {
     alert(param);
   } 
-
-  // addMarkers() {
-  //   let i = 1;
-  //   this.locations.forEach(element => {
-  //     this.map.addMarker({
-  //       title: element.id,
-  //       icon: 'blue', //ovde moze nasa ikonica!!!
-  //       animation: 'DROP',
-  //       position: {
-  //         lat: element.lat, 
-  //         lng: element.lng
-  //       },
-  //       zoom: 18
-  //     }).then((marker: Marker) => {
-  //       marker.showInfoWindow();
-  //       this.setGeofence(element.id, element.lat, element.lng, element.title, "Ovo je lep muzej", i);
-  //     });
-
-  //     i++;
-  //   });
-  // }
-
 }
