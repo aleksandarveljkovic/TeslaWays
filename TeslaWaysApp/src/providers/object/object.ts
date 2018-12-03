@@ -125,9 +125,9 @@ export class ObjectProvider {
       id: "za izbacivanje",
       index: 0,
       adress: "asd",
-      lat: 44.818185,    
-      lng:  20.531387,
-      title : "kod nas", // naziv lokacije
+      lat: 44.817665,    
+      lng:  20.531446,
+      title : "za izbacivanje", // naziv lokacije
       content : "Nestoooooooo",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
@@ -138,8 +138,8 @@ export class ObjectProvider {
       id: "Aroma",
       index: 1,
       adress: "adresa",
-      lat: 44.815981, 
-      lng:  20.532315,
+      lat: 44.816440, 
+      lng:  20.532479,
       title : "Aroma", // naziv lokacije
       content : "neki sadrzaj lokacije",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
@@ -151,8 +151,8 @@ export class ObjectProvider {
       id: "Panter",
       index: 2,
       adress: "adresaasdasd",
-      lat: 44.815981, 
-      lng: 20.532315,
+      lat: 44.815866, 
+      lng: 20.532218,
       title : "Panter", // naziv lokacije
       content : "DSA",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",

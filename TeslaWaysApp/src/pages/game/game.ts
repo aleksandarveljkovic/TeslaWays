@@ -1,13 +1,12 @@
 import { Question } from './../../objekat/question';
 import { Geofence } from '@ionic-native/geofence';
-import { Component, WrappedValue } from '@angular/core';
+import { Component} from '@angular/core';
 import { 
   IonicPage, 
   NavController, 
   NavParams, 
   Platform, 
-  AlertController, 
-  LoadingController} from 'ionic-angular';
+  AlertController} from 'ionic-angular';
 import {
   GoogleMaps,
   GoogleMap,
@@ -15,24 +14,12 @@ import {
   Marker,
   MyLocationOptions,
   LatLng,
-  Spherical,
-  VisibleRegion,
   GoogleMapsEvent
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { Tour } from '../../objekat/tura';
 import { Storage } from '@ionic/storage';
-import { isRightSide } from 'ionic-angular/umd/util/util';
 import { Location } from '../../objekat/locations';
-
-
-
-/**
- * Generated class for the GamePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -40,7 +27,6 @@ import { Location } from '../../objekat/locations';
   templateUrl: 'game.html',
 })
 export class GamePage {
-  visibleRegion: VisibleRegion;
   currentLocationIndex : number;
   map : GoogleMap;
   myLocationMarker: {
@@ -83,32 +69,21 @@ export class GamePage {
     
   }
 
-  ionViewWillEnter() {
-    this.platform.ready().then(() => {
-      // alert("About to update!");
-      // this.updatePosition();
-    });
-  }
-
-  
-
   ionViewDidLoad() {
     this.platform.ready().then(() => {
-
       this.geofence.initialize().then(() => {
-        // alert('geofence ready');
+        console.log("Geofence radi");
         
       });
     
       // JOS SE POIGRAJ KAD JE IGRA ZAVRSENA STA SE DESAVA
       this.storage.ready().then(() => {
-        // alert("Storage ready!")
-        
         this.storage.get("gameFinished")
           .then((value) => {
             this.gameFinished = value == undefined ? false : true;
 
             this.loadSetAnswered();
+            this.loadCurrentGeofences();
             this.tours = this.navParams.get('tours');
             this.locations = this.tours.locations;
           });
@@ -131,12 +106,10 @@ export class GamePage {
           lat : location.lat, 
           lng : location.lng, 
         },
-        zoom : 18
+        zoom : 25
         
       }).then((marker : Marker) => {
-        
-        // alert("Init marker id: " + marker.getId());
-        // this.getDistanceFromLatLonInKm(this.currrentCoords.lat, this.currrentCoords.lng, location.lat, location.lng);
+        console.log("[initialize markers] dodao marker na " + marker.getTitle());
       });
     });
   }
@@ -159,7 +132,7 @@ export class GamePage {
     this.storage.get("setAnsweredQuestions")
       .then((value) => {
         if (value == undefined) {
-          alert("Answered questions are empty");
+          console.log("Answered questions are empty");
           this.setAnsweredQuestions = new Set();
         }
         else {
@@ -170,7 +143,26 @@ export class GamePage {
             message += element + " "
           });
 
-          alert(message);
+          console.log(message);
+        }
+      });
+  }
+
+  loadCurrentGeofences() {
+    this.storage.get("currentGeofences")
+      .then((value) => {
+        if (value != undefined) {
+          this.currentGeofences = value;
+
+          let message = "current geofences: ";
+          this.currentGeofences.forEach(element => {
+            message += this.locations[element].id + " ";
+          });
+          console.log(message);
+        }
+        else {
+          console.log("Current geofences je prazan");
+          this.currentGeofences = new Set();
         }
       });
   }
@@ -178,7 +170,9 @@ export class GamePage {
   lokacije = [{lat: 44.817800, lng: 20.531600}, {lat: 44.815981, lng: 20.532315}];
   glupBrojac = 0;
   updatePosition() { 
-    let watcher = this.geolocation.watchPosition();
+    console.log("Updating hehehehe");
+    let opt: GeolocationOptions = {timeout:5000, enableHighAccuracy: true};
+    let watcher = this.geolocation.watchPosition(opt);
 
     watcher.subscribe((data) => {
       let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
@@ -192,18 +186,12 @@ export class GamePage {
     
   }
 
-  getCurrentObjectFromStorage() : Promise<any> {
-    
-    return this.storage.get("index");
-  }
-
   loadMap() {      
       let option: MyLocationOptions = {
         enableHighAccuracy: true
       };
       
       this.geolocation.getCurrentPosition(option).then((position) => {
-        // alert("current location via native geolocation: " + position.coords.latitude + " " + position.coords.longitude);
         this.currrentCoords = new LatLng(position.coords.latitude, position.coords.longitude);
         alert("Current coords " + this.currrentCoords.lat + " " + this.currrentCoords.lng);
         let mapOptions: GoogleMapOptions = {
@@ -221,13 +209,12 @@ export class GamePage {
 
         this.map.on(GoogleMapsEvent.MAP_READY)
           .subscribe(() => {
-            // alert("MAP READY triggered!");
             this.initializeMarkers();
-            // this.intializeGeofences();
             this.sortLocations();
 
             this.storage.get("currentGeofences")
               .then(value => {
+                console.log("current geofences from memory: " + value);
                 if (value == undefined) {
                   this.locations.forEach((location, idx) => {
                     if (!this.setAnsweredQuestions.has(location.index) && idx < this.NUM_OF_CLOSEST) {
@@ -238,7 +225,7 @@ export class GamePage {
                         location.title, 
                         location.content, 
                         location.index);
-                      alert("dodajem na " + location.index);
+                      console.log("dodajem na " + location.index);
                     }
                   });
                 }
@@ -262,29 +249,13 @@ export class GamePage {
         this.map.addMarker(this.myLocationMarker).then((marker: Marker) => {
           marker.showInfoWindow();
         });
-
-
-      const currInd = this.getCurrentObjectFromStorage();
-      currInd.then((val) => {
-        this.currentLocationIndex = val;  
-        // alert("Current index from local storage: " + this.currentLocationIndex + "\nAbout to setCurrentState()");
-
-        // this.setCurrentState();       
-      });
-
-              
       }).catch((err) => {
         alert(err.message);
       });
   }  
 
-  
-
-
-
   // OVDE SMO BATO NAJJACI
   intializeGeofences() {
-    // alert("About to initialize geofence");
     this.sortLocations();
     let setGeofenceHelper: Set<number> = new Set();
 
@@ -312,14 +283,14 @@ export class GamePage {
     // presek
     let intersect = new Set(arrGeofence.filter(x => this.currentGeofences.has(x)));
 
-
-    let msg = "velicina seta= "+intersect.size+"\npresek ona dva: ";
+/*
+    let msg = "velicina seta intersect= "+intersect.size+"\npresek ona dva: ";
     if (intersect.size != 0 ) {
       intersect.forEach(el => {
         msg += el + " ";
       });
     }
-    msg += "\n";
+    msg += "\nhelper:";
     if (setGeofenceHelper.size != 0 ) {
       setGeofenceHelper.forEach(el => {
         msg += el + " ";
@@ -332,8 +303,8 @@ export class GamePage {
       });
     }
 
-    alert(msg);
-
+    console.log(msg);
+*/
     for (let i = 0; i < this.locations.length; i++) {
       let index = this.locations[i].index;
       if (intersect.size == this.NUM_OF_CLOSEST) {
@@ -353,7 +324,7 @@ export class GamePage {
             this.geofence
               .remove(loc.index + "")
               .then(() => {
-                this.alertWrap("[init geo] Removed geofence from location " + loc.index);
+                console.log("[init geo] Removed geofence from location " + loc.index);
                 loc.answered = true;
             });
           }
@@ -375,7 +346,7 @@ export class GamePage {
     this.currentGeofences = intersect;
     this.storage.set("currentGeofences", this.currentGeofences)
       .then(() => {
-        // alert("Upisao u memoriju current geofences");
+        console.log("Upisao u memoriju current geofences");
       })
       .catch(() => {
         alert("Greska pri upisu current geofences");
@@ -419,7 +390,6 @@ export class GamePage {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
     var d = R * c; // Distance in km
 
-    // alert("distance for this point: " + d);
     return d;
   }
   
@@ -427,45 +397,16 @@ export class GamePage {
     return deg * (Math.PI/180);
   }
 
-  setCurrentState() {
-    if (this.currentLocationIndex == undefined) {
-      // alert("In current state, index from memory is null");
-      // this.sortLocations();
-
-      // this.locations.forEach(loc => {
-      //     alert(loc.index);
-      //   });
-
-      this.currentLocationIndex = this.locations[0].index; // Biram najblizu
-      // alert("Posto nisam nasao biram indeks: " + this.currentLocationIndex);
-      this.addMarker(this.currentLocationIndex);
-    }
-    else {
-      this.setAnsweredQuestions.forEach((index) => {
-        alert("Stavljam marker na odgovorenu lokaciju");
-        // alert("Stavljam marker na odgovorenu lokaciju sa indeksom " + index);
-        this.addMarker(index);
-      });
-      const nextLocation = this.locations[this.currentLocationIndex];
-      if (!this.setAnsweredQuestions.has(nextLocation.index)) {
-        alert("Setting geofence on next location " + nextLocation.id + " idx:" + nextLocation.index);
-        this.setGeofence(nextLocation.id, nextLocation.lat, nextLocation.lng, nextLocation.title, nextLocation.content, nextLocation.index);
-      }
-    }
-  }
-
-
   setGeofence(id:string, lat :number, lng:number, title : string, desc : string, idx : number) {
-    // alert(id + " " +lat + " " +lng + " " +title  + " " +desc + " " +idx);
     let fence = {
-      id : id,
+      id : idx+"",
       latitude : lat, 
       longitude : lng, 
       radius : 150, 
       transitionType : 1,
       notification : {
         id : idx,
-        title : "usao si u fence " + idx + " na lokaciji " + id,
+        title : "usao si u " + this.locations[idx].title,
         text : title,
         openAppOnClick : true
 
@@ -473,24 +414,25 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      // alert("E bato evo geofence-a :) na lokaciji " + id);   
+      console.log("[dodavanje geofence] na lokaciji " + id);   
     }).catch((err) => {
       alert(err.message);
     });
 
     this.geofence.onTransitionReceived()
-      .subscribe(() => {
-        this.alertWrap("Usao u geofence " + id + " sa indeksom " + idx);
-        // this.popUpQuestion();
+      .subscribe((geofnc) => {
+        console.log("[transition recieved] objekat " + JSON.stringify(geofnc));
+        geofnc.forEach(element => {
+          this.popUpQuestion(element.id);
+        });
       });
 
   }
 
-  
-
-  popUpQuestion() {
-    this.alertWrap("Usao sam u popup q");
-    let questions: Question[] = this.locations[this.currentLocationIndex].questions;
+  popUpQuestion(index) {
+    index = parseInt(index);
+    console.log("Izbacujem pitanje na lokaciji: " + this.locations[index].id);
+    let questions: Question[] = this.locations[index].questions;
     let a = Math.floor((Math.random()*100)%questions.length);
     let q = questions[a];
 
@@ -499,12 +441,14 @@ export class GamePage {
       handler : (data) => {
         if(data == q.true) {
           this.geofence
-            .remove(this.locations[this.currentLocationIndex].index + "")
+            .remove(this.locations[index].index + "")
             .then(() => {
-              this.alertWrap("removed geofence from location " + this.locations[this.currentLocationIndex].id);
-              this.locations[this.currentLocationIndex].answered = true;
-              // this.wrapper();
-              this.setMemoryState();
+              console.log("Skidam geofence sa lokacije " + this.locations[index].id + " jer tacno odgovorio na pitanje");
+              this.setAnsweredQuestions.add(index);
+              this.storage.set("setAnsweredQuestions", this.setAnsweredQuestions)
+                .then(() => {
+                  console.log("Upisao skup odgovorenih u memoriju");
+                });
             });
         }
       }
@@ -529,72 +473,13 @@ export class GamePage {
 
     const options = {
       title: "Pitanje",
-      subTitle: "Pitanje za lokaciju " + this.locations[this.currentLocationIndex].id,
+      subTitle: "Pitanje za lokaciju " + this.locations[index].id,
       buttons: buttons,
       inputs: inputs, 
       message : q.question
     };
     const alert = this.alertCtrl.create(options);
     alert.present();
-  }
-
-  allAnswered(): boolean {
-    return this.setAnsweredQuestions.size == this.locations.length;
-  }
-
-  setMemoryState() {
-    alert("Tacan odgovor! juhuuuuuuuuu");
-    this.setAnsweredQuestions.add(this.currentLocationIndex);
-    this.locations[this.currentLocationIndex].answered = true;
-
-    if (this.allAnswered()) {
-      this.endGameAlert.present();
-      this.gameFinished = true;
-
-      this.storage.set("setAnsweredQuestions", this.setAnsweredQuestions)
-        .then(() => {
-          this.alertWrap("Updating answered q for the last time :)");
-        });
-
-      this.storage.set("gameFinished", this.gameFinished)
-        .then(() => {
-          this.alertWrap("Game finished written to memory")
-        });
-      
-    }
-    else {
-      for (let i = 0; i < this.locations.length; i++) {
-        if (!this.setAnsweredQuestions.has(this.locations[i].index)) {
-          this.currentLocationIndex = this.locations[i].index;
-          break;
-        }
-      }
-  
-      alert("I upisujem indeks sledece lokacije u memoriju: " + this.currentLocationIndex);
-      this.storage
-        .set("setAnsweredQuestions", this.setAnsweredQuestions)
-        .then(() => {
-          alert("Updated set containing ans q");
-
-          this.storage
-            .set("index", this.currentLocationIndex)
-            .then(() => {
-              this.setCurrentState();
-         });
-       });      
-    }
-    // this.sortLocations();
-
-    
-    // this.locations[this.currentLocationIndex].answered = true;
-    // let a = Math.floor((Math.random()*100)%this.locations[this.currentLocationIndex].questions.length);
-    // this.currentLocationIndex++; // curr=sortirani indeksi od 0 
-    // this.storage
-    //   .set("question", this.locations[this.currentLocationIndex].questions[a])
-    //   .then(() => {
-    //     alert("Upisao objekat");
-    //     this.setCurrentState();
-    //   });
   }
 
   clearStorage() {
