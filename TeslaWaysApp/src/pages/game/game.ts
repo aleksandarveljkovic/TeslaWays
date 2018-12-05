@@ -49,6 +49,8 @@ export class GamePage {
 
   currentGeofences: Set<number> = new Set();
 
+  locationsForSort: Location[];
+
   endGameAlert = this.alertCtrl.create({
     title: 'VUUUUHUUUU',
     subTitle: 'Ti si ultra car i odgovorio si sva pitanja zavrsio rutu itd itd :)',
@@ -86,6 +88,7 @@ export class GamePage {
             this.loadCurrentGeofences();
             this.tours = this.navParams.get('tours');
             this.locations = this.tours.locations;
+            this.locationsForSort = Array.from(this.locations);
           });
       });
         this.loadMap();
@@ -118,7 +121,7 @@ export class GamePage {
     const myLat = this.currrentCoords.lat;
     const myLng = this.currrentCoords.lng;
 
-    this.locations.sort((a, b) => {
+    this.locationsForSort.sort((a, b) => {
       if (this.getDistanceFromLatLonInKm(myLat, myLng, a.lat, a.lng) < this.getDistanceFromLatLonInKm(myLat, myLng, b.lat, b.lng)) {
         return -1;
       }
@@ -174,6 +177,7 @@ export class GamePage {
     let opt: GeolocationOptions = {timeout:5000, enableHighAccuracy: true};
     let watcher = this.geolocation.watchPosition(opt);
 
+    // puca ovde, sinhronizuj
     watcher.subscribe((data) => {
       let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
       this.currrentCoords = currentLocation; 
@@ -209,6 +213,7 @@ export class GamePage {
 
         this.map.on(GoogleMapsEvent.MAP_READY)
           .subscribe(() => {
+            console.log("Map ready");
             this.initializeMarkers();
             this.sortLocations();
 
@@ -262,8 +267,8 @@ export class GamePage {
     let count = this.NUM_OF_CLOSEST;
     let cntNotAnswered = 0;
 
-    for (let i = 0; i < this.locations.length; i++) {
-      let index = this.locations[i].index;
+    for (let i = 0; i < this.locationsForSort.length; i++) {
+      let index = this.locationsForSort[i].index;
       if (!this.setAnsweredQuestions.has(index)) {
         setGeofenceHelper.add(index);
 
@@ -283,7 +288,8 @@ export class GamePage {
     // presek
     let intersect = new Set(arrGeofence.filter(x => this.currentGeofences.has(x)));
 
-/*
+
+
     let msg = "velicina seta intersect= "+intersect.size+"\npresek ona dva: ";
     if (intersect.size != 0 ) {
       intersect.forEach(el => {
@@ -304,33 +310,47 @@ export class GamePage {
     }
 
     console.log(msg);
-*/
-    for (let i = 0; i < this.locations.length; i++) {
-      let index = this.locations[i].index;
-      if (intersect.size == this.NUM_OF_CLOSEST) {
-        break;
-      }
 
-      if (!this.setAnsweredQuestions.has(index) && !intersect.has(index)) {
-        intersect.add(index);
-      }
-    }
+    // for (let i = 0; i < this.locationsForSort.length; i++) {
+    //   let index = this.locationsForSort[i].index;
+    //   if (intersect.size == this.NUM_OF_CLOSEST) {
+    //     break;
+    //   }
+
+    //   if (!this.setAnsweredQuestions.has(index) && !intersect.has(index)) {
+    //     intersect.add(index);
+    //   }
+    // }
+
+
 
     this.currentGeofences.forEach(idx => {
       if (!intersect.has(idx)) {
-        this.locations.forEach((loc) => {
-          if (loc.index == idx) {
-            // alert("Treba da skinem sa " + loc.title + " \nima indeks "+loc.index);
-            this.geofence
-              .remove(loc.index + "")
-              .then(() => {
-                console.log("[init geo] Removed geofence from location " + loc.index);
-                loc.answered = true;
-            });
-          }
-        });
+        this.geofence
+          .remove(this.locations[idx].index + "")
+          .then(() => {
+            console.log("[init geo] Removed geofence from location " + this.locations[idx].index);
+          });
+
+        // this.locations.forEach((loc) => {
+        //   if (loc.index == idx) {
+        //     // alert("Treba da skinem sa " + loc.title + " \nima indeks "+loc.index);
+        //     this.geofence
+        //       .remove(loc.index + "")
+        //       .then(() => {
+        //         console.log("[init geo] Removed geofence from location " + loc.index);
+        //         loc.answered = true;
+        //     });
+        //   }
+        // });
       }
     });  
+
+    setGeofenceHelper.forEach((el) => {
+      if (!intersect.has(el)) {
+        intersect.add(el);
+      }
+    });
     
     intersect.forEach(idx => {
       if (!this.currentGeofences.has(idx)) {
@@ -402,7 +422,7 @@ export class GamePage {
       id : idx+"",
       latitude : lat, 
       longitude : lng, 
-      radius : 150, 
+      radius : 500, 
       transitionType : 1,
       notification : {
         id : idx,

@@ -30,7 +30,7 @@ export class ObjectProvider {
       adress: "Studentski trg 16",
       lat: 44.820119,  
       lng:  20.459144,
-      title : "Muzej Tesla", // naziv lokacije
+      title : "test oko faksa", // naziv lokacije
       content : "Nestoooooooo",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
@@ -43,7 +43,7 @@ export class ObjectProvider {
       adress: "adresa",
       lat: 44.820715, 
       lng: 20.458832,
-      title : "Lokacija test passegenrs desni", // naziv lokacije
+      title : "test desno od passengersa", // naziv lokacije
       content : "neki sadrzaj lokacije",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
@@ -56,7 +56,7 @@ export class ObjectProvider {
       adress: "neka adresa bla bka",
       lat: 44.818904, 
       lng: 20.457434,
-      title : "Lokacija 4", // naziv lokacije
+      title : "iznad parka", // naziv lokacije
       content : "DSA",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
@@ -177,7 +177,7 @@ export class ObjectProvider {
 
   
   tours : Tour = 
-    {tourTitle: "Teslin put kroz Beograd", locations: this.visnjickaBanjaLocations};
+    {tourTitle: "Teslin put kroz Beograd", locations: this.locations};
 
   getData(url): Tour {
     // return this.http.get("/dajObjekat"); //ovde url kad dignem na localhost
