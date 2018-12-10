@@ -46,6 +46,7 @@ export class GamePage {
   answeredLocations: number[]; // Niz indeksa lokacija koje su odgovorene tacno
   currrentCoords: LatLng;
   setAnsweredQuestions: Set<number> = new Set();
+  pendingQuestion: Question;
 
   currentGeofences: Set<number> = new Set();
 
@@ -176,16 +177,27 @@ export class GamePage {
     console.log("Updating hehehehe");
     let opt: GeolocationOptions = {timeout:5000, enableHighAccuracy: true};
     let watcher = this.geolocation.watchPosition(opt);
+//     const subscription = this.geolocation.watchPosition()
+//                               .filter((p) => p.coords !== undefined) //Filter Out Errors
+//                               .subscribe(position => {
+//   console.log(position.coords.longitude + ' ' + position.coords.latitude);  
+// });
 
     // puca ovde, sinhronizuj
     watcher.subscribe((data) => {
+      if (data.coords != undefined) {
+      // console.log("Ovde pucam");
       let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
+      // console.log("Prosao sam");
+      
       this.currrentCoords = currentLocation; 
       // let currentLocation = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng)
       // this.currrentCoords = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng);
       // this.glupBrojac++;
       this.map.setCameraTarget(currentLocation);
       this.intializeGeofences();
+      // console.log("Na kraju sam");
+    }
     });  
     
   }
@@ -230,7 +242,7 @@ export class GamePage {
                         location.title, 
                         location.content, 
                         location.index);
-                      console.log("dodajem na " + location.index);
+                      // console.log("dodajem na " + location.index);
                     }
                   });
                 }
@@ -289,7 +301,7 @@ export class GamePage {
     let intersect = new Set(arrGeofence.filter(x => this.currentGeofences.has(x)));
 
 
-
+    /*
     let msg = "velicina seta intersect= "+intersect.size+"\npresek ona dva: ";
     if (intersect.size != 0 ) {
       intersect.forEach(el => {
@@ -310,19 +322,7 @@ export class GamePage {
     }
 
     console.log(msg);
-
-    // for (let i = 0; i < this.locationsForSort.length; i++) {
-    //   let index = this.locationsForSort[i].index;
-    //   if (intersect.size == this.NUM_OF_CLOSEST) {
-    //     break;
-    //   }
-
-    //   if (!this.setAnsweredQuestions.has(index) && !intersect.has(index)) {
-    //     intersect.add(index);
-    //   }
-    // }
-
-
+    */
 
     this.currentGeofences.forEach(idx => {
       if (!intersect.has(idx)) {
@@ -331,18 +331,6 @@ export class GamePage {
           .then(() => {
             console.log("[init geo] Removed geofence from location " + this.locations[idx].index);
           });
-
-        // this.locations.forEach((loc) => {
-        //   if (loc.index == idx) {
-        //     // alert("Treba da skinem sa " + loc.title + " \nima indeks "+loc.index);
-        //     this.geofence
-        //       .remove(loc.index + "")
-        //       .then(() => {
-        //         console.log("[init geo] Removed geofence from location " + loc.index);
-        //         loc.answered = true;
-        //     });
-        //   }
-        // });
       }
     });  
 
@@ -418,6 +406,7 @@ export class GamePage {
   }
 
   setGeofence(id:string, lat :number, lng:number, title : string, desc : string, idx : number) {
+    console.log("Ulazim u set geofence");
     let fence = {
       id : idx+"",
       latitude : lat, 
@@ -443,18 +432,59 @@ export class GamePage {
       .subscribe((geofnc) => {
         console.log("[transition recieved] objekat " + JSON.stringify(geofnc));
         geofnc.forEach(element => {
-          this.popUpQuestion(element.id);
+          this.resolvePending(element.id);
         });
       });
 
   }
 
-  popUpQuestion(index) {
+  resolvePending(index) {
+    const buttons = [{
+      text: "Uzmi pitanje",
+      handler : () => {
+        this.storage.get("pendingQuestion")
+        .then((value) => {
+          if (value == undefined) {
+            this.popUpQuestion(index, false);
+          }
+          else {
+            this.pendingQuestion = value;
+            this.popUpQuestion(index, true);
+          }
+        });
+        }
+     }, "Zatvori"];
+    
+    const options = {
+      title: "Otkrivena lokacija",
+      buttons: buttons,
+      message : "Otkrili ste novu lokaciju vuuuhuuuu"
+    };
+    const alert = this.alertCtrl.create(options);
+    alert.present();
+
+  }
+
+  popUpQuestion(index, hasPending: boolean) {
+    let q;
     index = parseInt(index);
-    console.log("Izbacujem pitanje na lokaciji: " + this.locations[index].id);
-    let questions: Question[] = this.locations[index].questions;
-    let a = Math.floor((Math.random()*100)%questions.length);
-    let q = questions[a];
+    if (!hasPending) {
+
+      console.log("Izbacujem pitanje na lokaciji: " + this.locations[index].id);
+      let questions: Question[] = this.locations[index].questions;
+      let a = Math.floor((Math.random()*100)%questions.length);
+      q = questions[a];
+      this.storage.set("pendingQuestion", q)
+        .then(() => {
+          console.log("Setting pending question...");
+        })
+        .catch((reason) => {
+          console.log("Error while setting pending question" + reason);
+        });
+    }
+    else {
+      q = this.pendingQuestion;
+    }
 
     const buttons = [{
       text: "Odgovori",
@@ -470,6 +500,10 @@ export class GamePage {
                   console.log("Upisao skup odgovorenih u memoriju");
                 });
             });
+            this.storage.remove("pendingQuestion")
+              .then(() => {
+                console.log("Removed pending, answered true");
+              });
         }
       }
      }, "Zatvori"];
