@@ -10,8 +10,6 @@ import { NewsPage } from './../pages/news/news';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
-//import { IonicImageLoader } from 'ionic-image-loader';
-
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -20,29 +18,22 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { NewsProvider } from '../providers/news/news';
 import { Geolocation } from '@ionic-native/geolocation';
-// import { CustomCardComponent } from '../components/custom-card/custom-card';
-// import { ProbaPage } from '../pages/proba/proba';
-
 import {GoogleMaps} from "@ionic-native/google-maps";
 import {Geofence} from "@ionic-native/geofence"
 import { ObjectProvider } from '../providers/object/object';
 
 import { IonicStorageModule } from '@ionic/storage';
 
-//  import { NativeLocator} from '../nativeLocator/nativeLocator';
-
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     NewsPage,
-    // ProbaPage,
     DisplayNewsPage, 
     GamePage,
     AboutProjectPage,
     TermsOfUsePage,
     SightsPage
-    // CustomCardComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +43,6 @@ import { IonicStorageModule } from '@ionic/storage';
       name: '__mydb',
         driverOrder:['indexeddb', 'sqlite', 'websql']
     })
-    //IonicImageLoader.forRoot()
 
   ],
   bootstrap: [IonicApp],
@@ -60,13 +50,11 @@ import { IonicStorageModule } from '@ionic/storage';
     MyApp,
     HomePage,
     NewsPage,
-    // ProbaPage,
     DisplayNewsPage,
     GamePage,
     AboutProjectPage,
     TermsOfUsePage,
     SightsPage
-    // CustomCardComponent
   ],
   providers: [
     StatusBar,
@@ -77,7 +65,6 @@ import { IonicStorageModule } from '@ionic/storage';
     NewsProvider,
     NetworkProvider,
     Network,    
-    // LocationService,
     Geolocation, 
     Geofence,
     NetworkProvider

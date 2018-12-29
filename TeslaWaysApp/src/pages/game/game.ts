@@ -406,19 +406,19 @@ export class GamePage {
   }
 
   setGeofence(id:string, lat :number, lng:number, title : string, desc : string, idx : number) {
-    console.log("Ulazim u set geofence");
+    // console.log("Ulazim u set geofence");
     let fence = {
       id : idx+"",
       latitude : lat, 
       longitude : lng, 
-      radius : 500, 
+      radius : 30, 
       transitionType : 1,
       notification : {
         id : idx,
         title : "usao si u " + this.locations[idx].title,
         text : title,
         openAppOnClick : true
-
+        
       }
     }
 
@@ -496,14 +496,14 @@ export class GamePage {
               console.log("Skidam geofence sa lokacije " + this.locations[index].id + " jer tacno odgovorio na pitanje");
               this.setAnsweredQuestions.add(index);
               this.storage.set("setAnsweredQuestions", this.setAnsweredQuestions)
-                .then(() => {
-                  console.log("Upisao skup odgovorenih u memoriju");
-                });
+              .then(() => {
+                console.log("Upisao skup odgovorenih u memoriju");
+              });
             });
             this.storage.remove("pendingQuestion")
-              .then(() => {
-                console.log("Removed pending, answered true");
-              });
+            .then(() => {
+              console.log("Removed pending, answered true");
+            });
         }
       }
      }, "Zatvori"];
@@ -538,31 +538,24 @@ export class GamePage {
 
   clearStorage() {
     this.storage.ready()
+    .then(() => {
+      this.storage.remove("index")
       .then(() => {
-        this.storage.remove("index")
-          .then(() => {
-            // alert("Removed index...");
-          })
-          .catch(() => {
-            alert("There's no index to remove :)");
-          });
+        console.log("Removed index from local storage...");
+
         this.storage.remove("setAnsweredQuestions")
+        .then(() => {
+          console.log("Removed setAnsweredQuestions from storage...");
+
+          this.storage.remove("currentGeofences")
           .then(() => {
-            // alert("Removed set...");
-
-            this.storage.remove("currentGeofences")
-            .then(() => {
-              // alert("Removed set...");
-            })
-            .catch(() => {
-              // alert("No set to be removed");
-            });
-          })
-          .catch(() => {
-            alert("No set to be removed");
+            console.log("Removed currentGeofences from storage...");
           });
-
-      });
+        });
+      })
+    }).catch(() => {
+      alert("Storage not ready!");
+    });
   }
 
   alertWrap(param) {

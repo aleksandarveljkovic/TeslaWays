@@ -14,9 +14,20 @@
 
 
 <ion-content padding>
+  <ion-header>
+    Interaktivna tura bla bla
+  </ion-header>
   <button ion-button (click)="clearStorage()">Clear local storage</button>
   <div id="map_canvas">
-    <!-- <button ion-button (click)="onButtonClick($event)">PocniIgru</button> -->
+    
   </div>
   
+  <ion-card *ngFor="let location of locationsForSort">
+    <ion-card-header>
+      {{ location.title }}
+    </ion-card-header>
+    <ion-card-content>
+      {{ location.content }}
+    </ion-card-content>
+  </ion-card>
 </ion-content>

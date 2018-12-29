@@ -177,7 +177,7 @@ export class ObjectProvider {
 
   
   tours : Tour = 
-    {tourTitle: "Teslin put kroz Beograd", locations: this.visnjickaBanjaLocations};
+    {tourTitle: "Teslin put kroz Beograd", locations: this.locations};
 
   getData(url): Tour {
     // return this.http.get("/dajObjekat"); //ovde url kad dignem na localhost

@@ -4,7 +4,6 @@ import { AboutProjectPage } from './../pages/about-project/about-project';
 import { SightsPage } from './../pages/sights/sights';
 import { NewsPage } from './../pages/news/news';
 import { HomePage } from './../pages/home/home';
-// import { ProbaPage } from './../pages/proba/proba';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -33,17 +32,7 @@ export class MyApp {
               public network: Network,
               public networkProvider: NetworkProvider) {
     this.initializeApp();
-    // platform.ready().then(() => {
-      // newsPage.hello();
-     // this.imageLoaderConfig.enableDebugMode();
-      // this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
-      // this.imageLoaderConfig.setFallbackUrl('assets/imgs/logo.png');
-      //this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
-      
-      
-
-      
-
+    
       // ovo je bilo van
       this.pages = [
         ///DODATI SVE STRANICE KOJE PRAVIMO
@@ -57,12 +46,7 @@ export class MyApp {
       
 
       statusBar.styleDefault();
-      splashScreen.hide();
-    // });
-    
-
-    // this.imageLoaderConfig.enableDebugMode();
-    // this.imageLoaderConfig.setMaximumCacheAge(24 * 60 * 60 * 1000);
+      splashScreen.hide();    
   }
 
   initializeApp() {
@@ -72,8 +56,6 @@ export class MyApp {
         .subscribe((data) => {
           this.news = data;
           this.newsProvider.news = data;
-          // this.rootPageParams = this.news;
-          alert("[app component] loaded news! " + this.news);
           this.rootPage = HomePage;               
         });
 

@@ -34,27 +34,11 @@ export class HomePage {
     
   }
 
-  setStorage() {
-    this.random = Math.random();
-    this.storage.set('random', this.random.toString());
-  }
-
-  storageTest() {
-    this.storage.get('random').then((val) => {
-      alert(val);
-    }).catch(() => {
-      alert("nema ga");
-    });
-  }
-
   ionViewDidLoad() {
     this.platform.ready().then(() => {
       this.tours = this.objectProvider.tours;
       this.news = this.newsProvider.news;
-      // alert("[home] " + this.news.articles[0].title);
       this.helper = [this.news.articles[0], this.news.articles[1], this.news.articles[2]];
-      // alert("[home] " + this.tours.tourTitle);
-      //this.setStorage();
     });
     
 
