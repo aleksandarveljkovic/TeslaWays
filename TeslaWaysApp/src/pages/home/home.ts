@@ -63,6 +63,15 @@ export class HomePage {
     this.navCtrl.push(DisplayNewsPage, {article: article});
   }
 
+  doRefresh(refresher) {
+    console.log("Refreshing... send http req");
+
+    this.news = this.newsProvider.news;
+
+    console.log("Gotovo");
+    refresher.complete();
+  }
+  
 }
 
 

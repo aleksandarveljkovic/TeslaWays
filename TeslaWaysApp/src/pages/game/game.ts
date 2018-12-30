@@ -14,7 +14,8 @@ import {
   Marker,
   MyLocationOptions,
   LatLng,
-  GoogleMapsEvent
+  GoogleMapsEvent,
+  CameraPosition
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { Tour } from '../../objekat/tura';
@@ -61,6 +62,8 @@ export class GamePage {
   gameFinished: boolean = false;
 
   NUM_OF_CLOSEST: number = 2;
+
+  mapDrag: boolean = false;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -171,33 +174,24 @@ export class GamePage {
       });
   }
 
-  lokacije = [{lat: 44.817800, lng: 20.531600}, {lat: 44.815981, lng: 20.532315}];
-  glupBrojac = 0;
   updatePosition() { 
-    console.log("Updating hehehehe");
+    console.log("Updating position");
     let opt: GeolocationOptions = {timeout:5000, enableHighAccuracy: true};
     let watcher = this.geolocation.watchPosition(opt);
-//     const subscription = this.geolocation.watchPosition()
-//                               .filter((p) => p.coords !== undefined) //Filter Out Errors
-//                               .subscribe(position => {
-//   console.log(position.coords.longitude + ' ' + position.coords.latitude);  
-// });
 
-    // puca ovde, sinhronizuj
     watcher.subscribe((data) => {
       if (data.coords != undefined) {
-      // console.log("Ovde pucam");
-      let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
-      // console.log("Prosao sam");
-      
-      this.currrentCoords = currentLocation; 
-      // let currentLocation = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng)
-      // this.currrentCoords = new LatLng(this.lokacije[this.glupBrojac%2].lat,this.lokacije[this.glupBrojac%2].lng);
-      // this.glupBrojac++;
-      this.map.setCameraTarget(currentLocation);
-      this.intializeGeofences();
-      // console.log("Na kraju sam");
-    }
+
+        let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
+
+        
+        this.currrentCoords = currentLocation; 
+
+        if (!this.mapDrag) {
+          this.map.setCameraTarget(currentLocation);
+        }
+        this.intializeGeofences();
+      }
     });  
     
   }
@@ -207,7 +201,8 @@ export class GamePage {
         enableHighAccuracy: true
       };
       
-      this.geolocation.getCurrentPosition(option).then((position) => {
+      this.geolocation.getCurrentPosition(option)
+      .then((position) => {
         this.currrentCoords = new LatLng(position.coords.latitude, position.coords.longitude);
         alert("Current coords " + this.currrentCoords.lat + " " + this.currrentCoords.lng);
         let mapOptions: GoogleMapOptions = {
@@ -224,34 +219,44 @@ export class GamePage {
         this.map = GoogleMaps.create('map_canvas', mapOptions);
 
         this.map.on(GoogleMapsEvent.MAP_READY)
+        .subscribe(() => {
+          console.log("Map ready");
+          this.map.setCompassEnabled(true);
+          this.map.setMyLocationButtonEnabled(true);
+          
+          this.map.on(GoogleMapsEvent.MAP_DRAG_START)
           .subscribe(() => {
-            console.log("Map ready");
-            this.initializeMarkers();
-            this.sortLocations();
-
-            this.storage.get("currentGeofences")
-              .then(value => {
-                console.log("current geofences from memory: " + value);
-                if (value == undefined) {
-                  this.locations.forEach((location, idx) => {
-                    if (!this.setAnsweredQuestions.has(location.index) && idx < this.NUM_OF_CLOSEST) {
-                      this.currentGeofences.add(location.index);
-                      this.setGeofence(location.id, 
-                        location.lat, 
-                        location.lng, 
-                        location.title, 
-                        location.content, 
-                        location.index);
-                      // console.log("dodajem na " + location.index);
-                    }
-                  });
-                }
-                else {
-                  this.currentGeofences = value;
-                }
-                this.updatePosition();
-              });
+            this.mapDrag = true;
           });
+
+          this.map.on(GoogleMapsEvent.MAP_DRAG_END)
+          .subscribe(() => {
+            this.mapDrag = false;
+          });
+          
+          
+          this.initializeMarkers();
+          this.sortLocations();
+
+          this.storage.get("currentGeofences")
+          .then(value => {
+              console.log("current geofences from memory: " + value);
+              if (value == undefined) {
+                this.locations.forEach((location, idx) => {
+                  if (!this.setAnsweredQuestions.has(location.index) && idx < this.NUM_OF_CLOSEST) {
+                    this.currentGeofences.add(location.index);
+                    this.setGeofence(location.id, location.lat, location.lng, location.title, location.content, location.index);
+                    // console.log("dodajem na " + location.index);
+                  }
+                });
+              }
+              else {
+                this.currentGeofences = value;
+              }
+
+              this.updatePosition();
+          });
+        });
 
         this.myLocationMarker = {
           title: 'Starting position',
@@ -271,7 +276,6 @@ export class GamePage {
       });
   }  
 
-  // OVDE SMO BATO NAJJACI
   intializeGeofences() {
     this.sortLocations();
     let setGeofenceHelper: Set<number> = new Set();

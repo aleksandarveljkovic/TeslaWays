@@ -49,6 +49,8 @@ export class MyApp {
       splashScreen.hide();    
   }
 
+  connectionStatus: boolean = true;
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.newsProvider
@@ -63,11 +65,14 @@ export class MyApp {
       this.networkProvider.initializeNetworkEvents();
 
       this.events.subscribe("network:offline", () => {
-        alert("Konekcija prekinuta... " + this.network.type);
+        this.connectionStatus = false;
+        alert("Konekcija izgubljena... " + this.network.type);
+        this.platform.exitApp();
       });
 
       this.events.subscribe("network:online", () => {
-        alert("Konekcija online... " + this.network.type);
+        alert("Veza sa mrezom ostvarena " + this.network.type);
+        this.connectionStatus = true;
       });
 
 
