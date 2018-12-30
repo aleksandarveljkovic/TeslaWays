@@ -14,13 +14,14 @@ import {
   Marker,
   MyLocationOptions,
   LatLng,
-  GoogleMapsEvent,
-  CameraPosition
+  GoogleMapsEvent
 } from '@ionic-native/google-maps';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { Tour } from '../../objekat/tura';
 import { Storage } from '@ionic/storage';
 import { Location } from '../../objekat/locations';
+import { Vibration } from '@ionic-native/vibration';
+
 
 @IonicPage()
 @Component({
@@ -71,7 +72,8 @@ export class GamePage {
               public geolocation: Geolocation, 
               private geofence : Geofence,
               private alertCtrl: AlertController, 
-              private storage : Storage) {
+              private storage : Storage,
+              private vibration: Vibration) {
     
   }
 
@@ -211,8 +213,8 @@ export class GamePage {
               lat: position.coords.latitude, 
               lng: position.coords.longitude
             },
-            zoom: 18,
-            tilt: 30
+            zoom: 15,
+            tilt: 20
           }
         };    
         
@@ -268,6 +270,7 @@ export class GamePage {
           },
           zoom: 18
         };
+
         this.map.addMarker(this.myLocationMarker).then((marker: Marker) => {
           marker.showInfoWindow();
         });
@@ -415,7 +418,7 @@ export class GamePage {
       id : idx+"",
       latitude : lat, 
       longitude : lng, 
-      radius : 30, 
+      radius : 100, 
       transitionType : 1,
       notification : {
         id : idx,
@@ -427,7 +430,7 @@ export class GamePage {
     }
 
     this.geofence.addOrUpdate(fence).then(() => {
-      console.log("[dodavanje geofence] na lokaciji " + id);   
+      console.log("[setGeofence] na lokaciji " + id);   
     }).catch((err) => {
       alert(err.message);
     });
@@ -494,20 +497,23 @@ export class GamePage {
       text: "Odgovori",
       handler : (data) => {
         if(data == q.true) {
+          this.vibration.vibrate([100, 300, 300, 100]);
+          this.alertWrap("Tacan odgovor!!!");
           this.geofence
-            .remove(this.locations[index].index + "")
+          .remove(this.locations[index].index + "")
+          .then(() => {
+            console.log("Skidam geofence sa lokacije " + this.locations[index].id + " jer tacno odgovorio na pitanje");
+            this.setAnsweredQuestions.add(index);
+
+            this.storage.set("setAnsweredQuestions", this.setAnsweredQuestions)
             .then(() => {
-              console.log("Skidam geofence sa lokacije " + this.locations[index].id + " jer tacno odgovorio na pitanje");
-              this.setAnsweredQuestions.add(index);
-              this.storage.set("setAnsweredQuestions", this.setAnsweredQuestions)
-              .then(() => {
-                console.log("Upisao skup odgovorenih u memoriju");
-              });
+              console.log("Upisao skup odgovorenih u memoriju");
             });
-            this.storage.remove("pendingQuestion")
-            .then(() => {
-              console.log("Removed pending, answered true");
-            });
+          });
+          this.storage.remove("pendingQuestion")
+          .then(() => {
+            console.log("Removed pending, answered true");
+          });
         }
       }
      }, "Zatvori"];

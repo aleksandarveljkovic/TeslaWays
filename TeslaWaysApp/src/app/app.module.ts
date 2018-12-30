@@ -1,3 +1,4 @@
+import { Vibration } from '@ionic-native/vibration';
 import { Network } from '@ionic-native/network';
 import { NetworkProvider } from './../providers/network/network';
 import { SightsPage } from './../pages/sights/sights';
@@ -66,6 +67,7 @@ import { IonicStorageModule } from '@ionic/storage';
     NetworkProvider,
     Network,    
     Geolocation, 
+    Vibration,
     Geofence,
     NetworkProvider
   ]

@@ -1,3 +1,4 @@
+import { Vibration } from '@ionic-native/vibration';
 import { Geolocation } from '@ionic-native/geolocation';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { NgModule } from '@angular/core';
@@ -11,6 +12,7 @@ import { GamePage } from './game';
   imports: [
     GoogleMaps,
     Geolocation,
+    Vibration,
     IonicPageModule.forChild(GamePage),
   ],
 })
