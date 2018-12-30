@@ -1,16 +1,17 @@
 import { Vibration } from '@ionic-native/vibration';
 import { Network } from '@ionic-native/network';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { NetworkProvider } from './../providers/network/network';
 import { SightsPage } from './../pages/sights/sights';
 import { TermsOfUsePage } from './../pages/terms-of-use/terms-of-use';
 import { AboutProjectPage } from './../pages/about-project/about-project';
 import { GamePage } from './../pages/game/game';
 import { DisplayNewsPage } from './../pages/display-news/display-news';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NewsPage } from './../pages/news/news';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -68,6 +69,7 @@ import { IonicStorageModule } from '@ionic/storage';
     Network,    
     Geolocation, 
     Vibration,
+    LocationAccuracy,
     Geofence,
     NetworkProvider
   ]

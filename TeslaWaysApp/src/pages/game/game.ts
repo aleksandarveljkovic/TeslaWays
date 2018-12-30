@@ -21,6 +21,7 @@ import { Tour } from '../../objekat/tura';
 import { Storage } from '@ionic/storage';
 import { Location } from '../../objekat/locations';
 import { Vibration } from '@ionic-native/vibration';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
 
 
 @IonicPage()
@@ -73,35 +74,50 @@ export class GamePage {
               private geofence : Geofence,
               private alertCtrl: AlertController, 
               private storage : Storage,
-              private vibration: Vibration) {
+              private vibration: Vibration,
+              private locationAccuracy: LocationAccuracy) {
     
   }
 
   ionViewDidLoad() {
-    this.platform.ready().then(() => {
-      this.geofence.initialize().then(() => {
-        console.log("Geofence radi");
-        
-      });
-    
-      // JOS SE POIGRAJ KAD JE IGRA ZAVRSENA STA SE DESAVA
-      this.storage.ready().then(() => {
-        this.storage.get("gameFinished")
-          .then((value) => {
-            this.gameFinished = value == undefined ? false : true;
+    this.locationAccuracy.canRequest().then((canRequest: boolean) => {
 
-            this.loadSetAnswered();
-            this.loadCurrentGeofences();
-            this.tours = this.navParams.get('tours');
-            this.locations = this.tours.locations;
-            this.locationsForSort = Array.from(this.locations);
-          });
-      });
-        this.loadMap();
-      
-    }).catch((err) => {
-      alert(err);
+      if(canRequest) {
+        this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+          () => {
+            
+            this.platform.ready().then(() => {
+              this.geofence.initialize().then(() => {
+                console.log("Geofence radi");
+                
+              });
+            
+              // JOS SE POIGRAJ KAD JE IGRA ZAVRSENA STA SE DESAVA
+              this.storage.ready().then(() => {
+                this.storage.get("gameFinished")
+                  .then((value) => {
+                    this.gameFinished = value == undefined ? false : true;
+        
+                    this.loadSetAnswered();
+                    this.loadCurrentGeofences();
+                    this.tours = this.navParams.get('tours');
+                    this.locations = this.tours.locations;
+                    this.locationsForSort = Array.from(this.locations);
+                  });
+              });
+                this.loadMap();
+              
+            }).catch((err) => {
+              alert(err);
+            });
+          },
+          error => console.log('Error requesting location permissions', error)
+        );
+      }
+    
     });
+
+    
     
   }
 
