@@ -33,7 +33,7 @@ export class GamePage {
   currentLocationIndex : number;
   map : GoogleMap;
   myLocationMarker: {
-    title: 'Starting position',
+    title: 'Pocetna pozicija',
     icon: 'red', //ovde moze nasa ikonica!!!
     animation: 'DROP',
     position: {
@@ -48,6 +48,7 @@ export class GamePage {
   currentGeofenceTriggered: any;
   answeredLocations: number[]; // Niz indeksa lokacija koje su odgovorene tacno
   currrentCoords: LatLng;
+  prevCoords: LatLng;
   setAnsweredQuestions: Set<number> = new Set();
   pendingQuestion: Question;
 
@@ -194,18 +195,19 @@ export class GamePage {
 
   updatePosition() { 
     console.log("Updating position");
-    let opt: GeolocationOptions = {timeout:5000, enableHighAccuracy: true};
-    let watcher = this.geolocation.watchPosition(opt);
+    const opt: GeolocationOptions = {timeout:7000, enableHighAccuracy: true};
+    const watcher = this.geolocation.watchPosition(opt);
 
     watcher.subscribe((data) => {
-      if (data.coords != undefined) {
+      
+      if (data.coords != undefined && this.getDistanceFromLatLonInKm(data.coords.latitude, data.coords.longitude, this.prevCoords.lat, this.prevCoords.lng) >= 0.05) {
 
-        let currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
+        const currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
 
-        
         this.currrentCoords = currentLocation; 
-
+        this.prevCoords = this.currrentCoords;
         if (!this.mapDrag) {
+          console.log("Updatujem jer je vise od 50m");
           this.map.setCameraTarget(currentLocation);
         }
         this.intializeGeofences();
@@ -222,6 +224,7 @@ export class GamePage {
       this.geolocation.getCurrentPosition(option)
       .then((position) => {
         this.currrentCoords = new LatLng(position.coords.latitude, position.coords.longitude);
+        this.prevCoords = this.currrentCoords;
         alert("Current coords " + this.currrentCoords.lat + " " + this.currrentCoords.lng);
         let mapOptions: GoogleMapOptions = {
           camera: {
@@ -277,7 +280,7 @@ export class GamePage {
         });
 
         this.myLocationMarker = {
-          title: 'Starting position',
+          title: 'Pocetna pozicija',
           icon: 'red', //ovde moze nasa ikonica!!!
           animation: 'DROP',
           position: {
@@ -576,6 +579,7 @@ export class GamePage {
           this.storage.remove("currentGeofences")
           .then(() => {
             console.log("Removed currentGeofences from storage...");
+            this.platform.exitApp();
           });
         });
       })
