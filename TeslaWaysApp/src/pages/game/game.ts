@@ -51,6 +51,7 @@ export class GamePage {
   prevCoords: LatLng;
   setAnsweredQuestions: Set<number> = new Set();
   pendingQuestion: Question;
+  pendingIndex: number;
 
   currentGeofences: Set<number> = new Set();
 
@@ -96,15 +97,15 @@ export class GamePage {
               // JOS SE POIGRAJ KAD JE IGRA ZAVRSENA STA SE DESAVA
               this.storage.ready().then(() => {
                 this.storage.get("gameFinished")
-                  .then((value) => {
-                    this.gameFinished = value == undefined ? false : true;
-        
-                    this.loadSetAnswered();
-                    this.loadCurrentGeofences();
-                    this.tours = this.navParams.get('tours');
-                    this.locations = this.tours.locations;
-                    this.locationsForSort = Array.from(this.locations);
-                  });
+                .then((value) => {
+                  this.gameFinished = value == undefined ? false : true;
+      
+                  this.loadSetAnswered();
+                  this.loadCurrentGeofences();
+                  this.tours = this.navParams.get('tours');
+                  this.locations = this.tours.locations;
+                  this.locationsForSort = Array.from(this.locations);
+                });
               });
                 this.loadMap();
               
@@ -200,13 +201,13 @@ export class GamePage {
 
     watcher.subscribe((data) => {
       
-      if (data.coords != undefined && this.getDistanceFromLatLonInKm(data.coords.latitude, data.coords.longitude, this.prevCoords.lat, this.prevCoords.lng) >= 0.05) {
+      if (data.coords != undefined ) {
 
         const currentLocation = new LatLng(data.coords.latitude, data.coords.longitude);  
 
         this.currrentCoords = currentLocation; 
         this.prevCoords = this.currrentCoords;
-        if (!this.mapDrag) {
+        if (!this.mapDrag && this.getDistanceFromLatLonInKm(data.coords.latitude, data.coords.longitude, this.prevCoords.lat, this.prevCoords.lng) >= 0.05) {
           console.log("Updatujem jer je vise od 50m");
           this.map.setCameraTarget(currentLocation);
         }
@@ -455,12 +456,12 @@ export class GamePage {
     });
 
     this.geofence.onTransitionReceived()
-      .subscribe((geofnc) => {
-        console.log("[transition recieved] objekat " + JSON.stringify(geofnc));
-        geofnc.forEach(element => {
-          this.resolvePending(element.id);
-        });
+    .subscribe((geofnc) => {
+      console.log("[transition recieved] objekat " + JSON.stringify(geofnc));
+      geofnc.forEach(element => {
+        this.resolvePending(element.id);
       });
+    });
 
   }
 
@@ -471,11 +472,18 @@ export class GamePage {
         this.storage.get("pendingQuestion")
         .then((value) => {
           if (value == undefined) {
+            console.log("Nema pending pitanja...");
             this.popUpQuestion(index, false);
           }
           else {
             this.pendingQuestion = value;
-            this.popUpQuestion(index, true);
+            console.log("Imam pending...");
+
+            this.storage.get("pendingLocationIndex")
+            .then((value) => {
+              this.pendingIndex = value;
+              this.popUpQuestion(index, true);
+            });         
           }
         });
         }
@@ -494,22 +502,33 @@ export class GamePage {
   popUpQuestion(index, hasPending: boolean) {
     let q;
     index = parseInt(index);
+    let pomIndex = index;
+    console.log(hasPending);
     if (!hasPending) {
-
       console.log("Izbacujem pitanje na lokaciji: " + this.locations[index].id);
       let questions: Question[] = this.locations[index].questions;
       let a = Math.floor((Math.random()*100)%questions.length);
       q = questions[a];
       this.storage.set("pendingQuestion", q)
-        .then(() => {
-          console.log("Setting pending question...");
-        })
-        .catch((reason) => {
-          console.log("Error while setting pending question" + reason);
-        });
+      .then(() => {
+        console.log("Setting pending question...");
+      })
+      .catch((reason) => {
+        console.log("Error while setting pending question" + reason);
+      });
+
+      this.storage.set("pendingLocationIndex", this.locations[index].index)
+      .then(() => {
+        console.log("Setting pending index...");
+      })
+      .catch((reason) => {
+        console.log("error pending index " + reason);
+      });
     }
     else {
       q = this.pendingQuestion;
+      index = this.pendingIndex;
+      console.log("Izbacujem pitanje na lokaciji: " + this.locations[index].id);
     }
 
     const buttons = [{
@@ -532,9 +551,12 @@ export class GamePage {
           this.storage.remove("pendingQuestion")
           .then(() => {
             console.log("Removed pending, answered true");
+            if(hasPending)
+              this.popUpQuestion(pomIndex, false);
           });
         }
       }
+      // Za zatvori treba resiti onaj handler
      }, "Zatvori"];
 
     const answers: any[] = q.answers;
@@ -579,7 +601,15 @@ export class GamePage {
           this.storage.remove("currentGeofences")
           .then(() => {
             console.log("Removed currentGeofences from storage...");
-            this.platform.exitApp();
+            this.storage.remove("pendingLocationIndex")
+            .then(() => {
+              this.storage.remove("pendingQuestion")
+              .then(() => {
+                this.platform.exitApp();
+              });
+              
+            });
+            
           });
         });
       })

@@ -25,12 +25,12 @@ export class ObjectProvider {
   // Testiranje oko faksa
   locations : Location[] = [
     {
-      id: "test oko faksa",
+      id: "test kod rajiceve",
       index: 0,
-      adress: "Studentski trg 16",
-      lat: 44.820119,  
-      lng:  20.459144,
-      title : "test oko faksa", // naziv lokacije
+      adress: "rajiceva",
+      lat: 44.820591,   
+      lng:  20.456052,
+      title : "test kod rajiceve", // naziv lokacije
       content : "Nestoooooooo",
       urlToImg: "https://www.w3schools.com/w3css/img_lights.jpg",
       questions: this.questions,
