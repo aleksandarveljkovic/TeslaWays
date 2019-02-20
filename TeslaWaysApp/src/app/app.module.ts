@@ -25,6 +25,7 @@ import {Geofence} from "@ionic-native/geofence"
 import { ObjectProvider } from '../providers/object/object';
 
 import { IonicStorageModule } from '@ionic/storage';
+import { LocationPage } from '../pages/location/location';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { IonicStorageModule } from '@ionic/storage';
     GamePage,
     AboutProjectPage,
     TermsOfUsePage,
-    SightsPage
+    SightsPage,
+    LocationPage
   ],
   imports: [
     BrowserModule,
@@ -56,7 +58,8 @@ import { IonicStorageModule } from '@ionic/storage';
     GamePage,
     AboutProjectPage,
     TermsOfUsePage,
-    SightsPage
+    SightsPage,
+    LocationPage
   ],
   providers: [
     StatusBar,

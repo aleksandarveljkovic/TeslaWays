@@ -1,3 +1,4 @@
+import { LocationPage } from './../location/location';
 import { Question } from './../../objekat/question';
 import { Geofence } from '@ionic-native/geofence';
 import { Component} from '@angular/core';
@@ -466,6 +467,7 @@ export class GamePage {
   }
 
   resolvePending(index) {
+    this.showLocationPage(this.locations[index]);
     const buttons = [{
       text: "Uzmi pitanje",
       handler : () => {
@@ -616,6 +618,10 @@ export class GamePage {
     }).catch(() => {
       alert("Storage not ready!");
     });
+  }
+
+  showLocationPage(location: Location) {
+    this.navCtrl.push(LocationPage, {location: location});
   }
 
   alertWrap(param) {
