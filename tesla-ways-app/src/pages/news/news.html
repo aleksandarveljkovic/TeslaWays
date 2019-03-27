@@ -1,0 +1,18 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Novosti</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+   <ion-card *ngFor="let article of data?.articles" (click)=displayArticle(article.content)>
+    <a href="https://www.w3schools.com/w3css/img_lights.jpg">LINK</a>
+     <ion-card-content> 
+        <ion-card-title>{{article?.title}}</ion-card-title>
+        <p>{{article?.description}}</p>
+      </ion-card-content>
+  </ion-card> 
+</ion-content>

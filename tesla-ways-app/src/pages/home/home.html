@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Naslovna strana</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        
+        <ion-refresher-content 
+          pullingIcon="arrow-dropdown"
+          pullingText="Pull to refresh"
+          refreshingSpinner="circles"
+          refreshingText="Refreshing...">
+           
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <div id="tourDiv">
+        <ion-title>Interaktivna tura</ion-title>
+        <ion-card> <!--*ngFor="let tour of tours"-->
+          <!-- <ion-card-header>
+              {{ tours.tourTitle }}
+          </ion-card-header> -->
+          <ion-card-content>
+              <button ion-button (click)="startGame()">Zapocni turu</button>  
+          </ion-card-content>
+        </ion-card>
+      </div>
+      <br>
+      <div id="newsDiv">
+          <ion-title>Novosti</ion-title>
+          <ion-card *ngFor="let article of helper" (click)="displayArticle(article.content)">
+              <a href="https://www.w3schools.com/w3css/img_lights.jpg">LINK</a>
+               <ion-card-content> 
+                  <ion-card-title>{{article?.title}}</ion-card-title>
+                  <p>{{article?.description}}</p>
+              </ion-card-content>
+            
+          </ion-card> 
+    
+          <a (click)="openNewsPage()">Jos novosti</a>
+      </div> 
+ 
+</ion-content>
+
+<!-- DODAO SAM OVAJ KOMENTAR ZA UPDATE -->
