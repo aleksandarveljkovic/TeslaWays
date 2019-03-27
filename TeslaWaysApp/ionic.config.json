@@ -1,7 +1,0 @@
-{
-  "name": "TeslaWaysApp",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "ionic-angular"
-}
