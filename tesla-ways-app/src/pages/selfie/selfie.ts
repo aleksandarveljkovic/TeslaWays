@@ -1,4 +1,4 @@
-import { CameraPreview, CameraPreviewOptions } from '@ionic-native/camera-preview';
+import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@ionic-native/camera-preview';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
@@ -16,42 +16,67 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SelfiePage {
   
-  imgData: any;
+  imgData: any
+  canvas: any    
+  ctx: CanvasRenderingContext2D 
+  options: CameraPreviewOptions
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private cameraPreview: CameraPreview) {
     this.cameraPreview = cameraPreview
   }
 
   ionViewDidLoad() {
-    const cameraPreviewOpts: CameraPreviewOptions = {
-      x: 60,
-      y: 60,
-      width: window.screen.width * 70/100,
-      height: window.screen.height * 40/100,
+    this.options = {
+      x: 0,
+      y: 0,
+      width: window.screen.width,
+      height: window.screen.height,
       camera: "front",
       tapPhoto: true,
       previewDrag: false,
-      toBack: true,
-      alpha: 0.5
+      toBack: true
     }
-    console.log("hello there");
 
-    this.cameraPreview.startCamera(cameraPreviewOpts)
+    this.canvas = document.querySelector("#canvas")
+    this.ctx = this.canvas.getContext("2d")
+    
+    this.canvas.width = window.screen.width
+    this.canvas.height = window.screen.height
+  }
+
+  stopPreview() {
+    this.cameraPreview.stopCamera()
+    .then((res) => {
+        console.log("Stopping preview");
+        
+    })
+    .catch((err) => {
+        console.log("Error while stopping camera prew " + err);
+        
+    })
+  }
+
+  startPreview() {  
+    this.cameraPreview.startCamera(this.options)
     .then((res) => {
       console.log("Started camera preview")
     })
     .catch((err) => {
       console.log("Error while starting camera preview")
-    })  
-    
+    })
   }
 
-  takePicture() {
-    console.log("Button pressed!");
+  takePicture() { 
+    this.startPreview()  
+    let picOps: CameraPreviewPictureOptions = {
+      width: this.canvas.width,
+      height: this.canvas.height,
+      quality: 100
+    }
     
-
-    this.cameraPreview.takePicture({width: window.screen.width * 70/100, height: window.screen.height * 40/100})
+    this.cameraPreview.takePicture(picOps)
     .then((base64data) => {
+      // Mirror uradi
       this.imgData = "data:image/jpeg;base64," + base64data;
 
       this.cameraPreview.hide()
@@ -60,29 +85,23 @@ export class SelfiePage {
         
       });
 
-      const canvas: any = document.querySelector("#canvas");
-      
-      const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-
       let picture = new Image();
 
       picture.src = this.imgData;
+      this.canvas.width = window.screen.width
+      this.canvas.height = window.screen.height
+      this.ctx.drawImage(picture, 0, 0);
 
-      ctx.drawImage(picture, 0, 0);
+      
+
+      this.stopPreview()
     })
 
   }
 
-  ionViewWillLeave(){
-    this.cameraPreview.stopCamera()
-    .then((res) => {
-      console.log("Stopping preview");
-      
-    })
-    .catch((err) => {
-      console.log("Error while stopping camera prew " + err);
-      
-    })
+    ionViewWillLeave() {
+      this.stopPreview()
+    }
   }
 
-}
+  
